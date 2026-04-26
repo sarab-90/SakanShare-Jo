@@ -1,0 +1,17 @@
+create table users (
+    userid serial primary key,
+    created_at timestamp default current_timestamp,
+    name varchar(100) not null,
+    email varchar(100) unique not null,
+    phone varchar(20),
+    hashed_password varchar(255) not null,
+    role varchar(20) default 'user',
+    is_active boolean default true
+);
+select * from users
+
+insert into users(name, email , phone, hashed_password, role) 
+values ('sarab', 'sarab@admin.com','0777408634', 'Sarab1990#', 'admin');
+
+insert into users(name, email , phone, hashed_password, role) 
+values ('mesk', 'mesk@user.com','0787408634', 'Mesk2026##', 'user');
