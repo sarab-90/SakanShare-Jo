@@ -50,20 +50,56 @@ export const login = asyncHandler(async (req, res) => {
         .status(400)
         .json({ message: "Email or password is incorrect" });
     }
-    return res
-      .status(200)
-      .json({
-        message: "Login successful",
-        user: {
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-        },
-      });
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 });
 // Logout user
+export const logout = asyncHandler(async (req, res) => {
+  const token = req.cookies.refreshToken;
+  if (!token) {
+    return res.status(400).json({ message: "No token provided" });
+  }
+  const decoded = verifyRefreshToken(token);
+  await saveRefreshToken(decoded.userId, null);
 
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  return res.status(200).json({
+    message: "Logged out successfully",
+  });
+});
+// current user
+export const currentUser = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const user = await getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({
+      message: "Current user retrieved successfully",
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    });
+  } catch (error) {
+    console.log(" Error fetching current user:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+});
