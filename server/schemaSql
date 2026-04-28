@@ -12,6 +12,96 @@ select * from users
 
 insert into users(name, email , phone, hashed_password, role) 
 values ('sarab', 'sarab@admin.com','0777408634', 'Sarab1990#', 'admin');
-
 insert into users(name, email , phone, hashed_password, role) 
 values ('mesk', 'mesk@user.com','0787408634', 'Mesk2026##', 'user');
+
+CREATE TABLE preferences (
+    pref_id SERIAL PRIMARY KEY,
+	userid INT UNIQUE REFERENCES users(userid) ON DELETE CASCADE,
+    gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'any')),
+    min_age INTEGER,
+    max_age INTEGER,
+    smoking BOOLEAN DEFAULT false,
+    sleep_time VARCHAR(50), 
+    cleanliness VARCHAR(50),
+	noise_tolerance VARCHAR(20),
+	pets_allowed BOOLEAN,
+	guest_policy VARCHAR(50),
+	additional_notes TEXT,
+    budget DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHECK (min_age IS NULL OR max_age IS NULL OR min_age <= max_age)
+);
+select * from preferences
+
+CREATE TABLE shared_housing (
+    listing_id SERIAL PRIMARY KEY,
+    owner_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    city VARCHAR(50),
+    area VARCHAR(100),
+	price DECIMAL(10,2) CHECK (price >= 0),
+	images TEXT[],
+	currency VARCHAR(10) DEFAULT 'JOD',
+    is_shared BOOLEAN DEFAULT true,
+    rooms_count INT CHECK (rooms_count > 0),
+	bathrooms_count INT CHECK (bathrooms_count > 0),
+    furnished BOOLEAN DEFAULT false,
+    has_wifi BOOLEAN DEFAULT true,
+    has_parking BOOLEAN DEFAULT false,
+    has_kitchen BOOLEAN DEFAULT true,
+    has_washing_machine BOOLEAN DEFAULT false,
+    current_occupants INT DEFAULT 0,
+    max_occupants INT NOT NULL,
+	gender_allowed VARCHAR(10) DEFAULT 'any' CHECK (gender_allowed IN ('male', 'female', 'any')),
+	latitude DECIMAL(10, 8), 
+    longitude DECIMAL(11, 8),
+    is_available BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT occupants_check CHECK (
+        current_occupants >= 0 AND 
+        max_occupants > 0 AND 
+        current_occupants <= max_occupants
+    )
+	);
+select * from shared_housing
+
+
+CREATE TABLE roommate_requests (
+    request_id SERIAL PRIMARY KEY,
+    sender_id INT REFERENCES users(userid) ON DELETE CASCADE,     
+    listing_id INT REFERENCES shared_housing(listing_id) ON DELETE CASCADE,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'canceled')),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	);
+select * from roommate_requests
+
+CREATE TABLE messages (
+    message_id SERIAL PRIMARY KEY,
+    sender_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    receiver_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    listing_id INT REFERENCES shared_housing(listing_id) ON DELETE SET NULL,
+    message_text TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHECK (sender_id <> receiver_id)
+);
+select * from messages
+
+
+CREATE TABLE reviews (
+    review_id SERIAL PRIMARY KEY,
+    reviewer_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    reviewed_user_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT cannot_review_self CHECK (reviewer_id <> reviewed_user_id),
+	CONSTRAINT unique_review UNIQUE (reviewer_id, reviewed_user_id)
+);
+select * from reviews
+
+
+
