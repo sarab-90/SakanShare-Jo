@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./src/routes/authRoutes.js";
+import listingRoutes from "./src/routes/listingRoutes.js";
 
 import {errorHandler} from "./src/middleware/errorHandlerMiddleware.js";
 import {globalRateLimitMiddleware} from "./src/middleware/globalRateLimitMiddleware.js";
@@ -27,7 +28,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 // Routes
 app.use('/api', authRoutes);
-
+app.use('/api', listingRoutes);
 
 app.use(errorHandler);
 app.listen(process.env.PORT, () => {
