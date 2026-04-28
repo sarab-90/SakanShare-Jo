@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 export const protect = (req, res, next) => {
+  console.log("All Cookies:", req.cookies); // أضيفي هذا السطر
   let token = req.cookies.token || null;
   if (!token) {
     return res.status(401).json({
