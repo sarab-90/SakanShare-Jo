@@ -7,9 +7,9 @@ export const registerSchema = joi.object({
         "string.empty": "Name is required",
         "string.required": "Name is required",
     }),
-    email: joi.string().email().min(6).max(255).required().messages({
+    email: joi.string().email().min(8).max(255).required().messages({
         "string.email": "Email must be a valid email address",
-        "string.min": "Email must be at least 6 characters",
+        "string.min": "Email must be at least 8 characters",
         "string.max": "Email must be less than 255 characters",
         "string.empty": "Email is required",
         "string.required": "Email is required",
@@ -34,11 +34,11 @@ export const registerSchema = joi.object({
     }),
     role: joi
     .string()
-    .valid("user", "admin", "provider")
+    .valid("user", "admin", "landlord")
     .default("user")
     .required()
     .messages({
-        "string.valid": "Role must be either user, admin, or provider",
+        "string.valid": "Role must be either user, admin, or landlord",
         "string.empty": "Role is required",
         "string.required": "Role is required",
     }),

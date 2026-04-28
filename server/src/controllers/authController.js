@@ -1,10 +1,15 @@
 import { createUser } from "../models/authModel.js";
+import { generateTokens } from "../utils/tokensUtils.js";
+import {
+  setAccessTokenCookie,
+  setRefreshTokenCookie,
+} from "../utils/cookiesUtils.js";
 import { getUserByEmail } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 // Register a new user
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password } = req.validateData;
+  const { name, email, phone, password, role } = req.validateData;
   if (!name || !email || !phone || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -19,7 +24,7 @@ export const register = asyncHandler(async (req, res) => {
     email,
     phone,
     hashed_password,
-    "user",
+    role,
     true,
   );
   if (!newUser) {
@@ -44,15 +49,25 @@ export const login = asyncHandler(async (req, res) => {
         .status(400)
         .json({ message: "User not register, please register first" });
     }
+    // Check password
     const isMatch = await bcrypt.compare(password, user.hashed_password);
     if (!isMatch) {
       return res
         .status(400)
         .json({ message: "Email or password is incorrect" });
     }
+    // Generate tokens
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Set cookies
+    setAccessTokenCookie(res, accessToken);
+    setRefreshTokenCookie(res, refreshToken);
+    // Send response
     return res.status(200).json({
+      success: true,
       message: "Login successful",
       user: {
+        userid: user.userid,
         name: user.name,
         email: user.email,
         phone: user.phone,
