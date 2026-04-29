@@ -69,3 +69,45 @@ export const listingSchema = joi.object({
     }),
     is_available: joi.boolean().default(true),  
 });
+// update listing schema
+export const updateListingSchema = joi.object({
+  title: joi.string().min(5).max(255),
+
+  description: joi.string().max(5000),
+
+  city: joi.string().max(50),
+
+  area: joi.string().max(100),
+
+  price: joi.number().min(0),
+
+  images: joi.array().items(joi.string()),
+
+  currency: joi.string().max(10),
+
+  is_shared: joi.boolean(),
+
+  rooms_count: joi.number().integer().min(1),
+
+  bathrooms_count: joi.number().integer().min(1),
+
+  furnished: joi.boolean(),
+
+  has_wifi: joi.boolean(),
+
+  has_parking: joi.boolean(),
+
+  has_kitchen: joi.boolean(),
+
+  has_washing_machine: joi.boolean(),
+
+  max_occupants: joi.number().integer().min(1),
+
+  gender_allowed: joi.string().valid("male", "female", "any"),
+
+  latitude: joi.number().min(-90).max(90).allow(null),
+
+  longitude: joi.number().min(-180).max(180).allow(null),
+
+  is_available: joi.boolean(),
+});
