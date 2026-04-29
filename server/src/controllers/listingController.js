@@ -112,28 +112,9 @@ export const getListingByIdController = asyncHandler(async (req, res) => {
 // Update listing by ID
 export const updateListingController = asyncHandler(async (req, res) => {
   const listingId = req.params.id;
-  const {
-    title,
-    description,
-    city,
-    area,
-    price,
-    images,
-    currency,
-    is_shared,
-    rooms_count,
-    bathrooms_count,
-    max_occupants,
-    gender_allowed,
-    latitude,
-    longitude,
-    furnished,
-    has_wifi,
-    has_parking,
-    has_kitchen,
-    has_washing_machine,
-    is_available,
-  } = req.validateData;
+  const updates = req.validateData;
+  const userid = req.user.userid;
+
   if (!listingId) {
     return res.status(400).json({ message: "Listing ID is required" });
   }
@@ -148,28 +129,10 @@ export const updateListingController = asyncHandler(async (req, res) => {
         .status(403)
         .json({ message: "Not authorized to update this listing" });
     }
-    const updatedListing = await updateListing(listingId, {
-      title,
-      description,
-      city,
-      area,
-      price,
-      images,
-      currency,
-      is_shared,
-      rooms_count,
-      bathrooms_count,
-      max_occupants,
-      gender_allowed,
-      latitude,
-      longitude,
-      furnished,
-      has_wifi,
-      has_parking,
-      has_kitchen,
-      has_washing_machine,
-      is_available,
-    });
+    const updatedListing = await updateListing(listingId, updates);
+    if (!updatedListing) {
+      return res.status(404).json({ message: "Failed to update listing" });
+    }
     return res
       .status(200)
       .json({ success: true, message: "Updated Successfully", data: updatedListing });
