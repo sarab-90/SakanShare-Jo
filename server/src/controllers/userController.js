@@ -9,7 +9,7 @@ import {
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 // get all users
 export const getAllUsersController = asyncHandler(async (req, res) => {
-  try {
+  try {    
     const users = await getAllUsers();
     if (users.length === 0) {
       return res.status(200).json({
@@ -18,7 +18,7 @@ export const getAllUsersController = asyncHandler(async (req, res) => {
         users: [],
       });
     }
-    return res.status(200).json(users);
+    return res.status(200).json({success: true, users});
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -37,8 +37,9 @@ export const getUserByIdController = asyncHandler(async (req, res) => {
         success: false,
         message: "User not found",
       });
-      return res.status(200).json(user);
     }
+    return res.status(200).json({success: true , user});
+
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -58,7 +59,7 @@ export const getUserByEmailController = asyncHandler(async (req, res) => {
         message: "User not found",
       });
     }
-    return res.status(200).json(user);
+    return res.status(200).json({success : true , user});
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -70,14 +71,14 @@ export const getUserByEmailController = asyncHandler(async (req, res) => {
 // update user
 export const updateUserController = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, email, password, phone } = req.body;
+  const { name, email, phone } = req.body;
   try {
-    const updatedUser = await updateUser(id, {
+    const updatedUser = await updateUser(
+      id, 
       name,
       email,
-      password,
       phone,
-    });
+    );
     if (!updatedUser) {
       return res.status(404).json({
         success: false,
@@ -101,13 +102,8 @@ export const updateUserController = asyncHandler(async (req, res) => {
 export const deleteUserController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedUser = await deleteUser(id);
-    if (!deletedUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    await deleteUser(id);
+
     return res.status(200).json({
       success: true,
       message: "User deleted successfully",
@@ -120,3 +116,20 @@ export const deleteUserController = asyncHandler(async (req, res) => {
     });
   }
 });
+// deactivate user
+export const deactivateUserController = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = await deactivateUser(id);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    message: "User deactivated successfully",
+    user,
+  });
+});
+

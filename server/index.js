@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./src/routes/authRoutes.js";
+import usersRoutes from "./src/routes/usersRoutes.js";
 import listingRoutes from "./src/routes/listingRoutes.js";
 import preferencesRoutes from "./src/routes/preferencesRoutes.js";
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }) );
 // Routes
 app.use('/api', authRoutes);
+app.use('/api', usersRoutes);
 app.use('/api', listingRoutes);
 app.use('/api', preferencesRoutes);
 

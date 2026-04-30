@@ -1,5 +1,5 @@
-import { createUser } from "../models/authModel.js";
-import { verifyRefreshToken, saveRefreshToken } from "../../utils/tokensUtils.js";
+import { createUser, changePassword, saveRefreshToken } from "../models/authModel.js";
+import { verifyRefreshToken } from "../../utils/tokensUtils.js";
 import { generateTokens } from "../../utils/tokensUtils.js";
 import {
   setAccessTokenCookie,
@@ -60,6 +60,8 @@ export const login = asyncHandler(async (req, res) => {
     }
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user);
+    // حفظ refresh token في DB
+    await saveRefreshToken(user.userid, refreshToken);
 
     // Set cookies
     setAccessTokenCookie(res, accessToken);
@@ -68,6 +70,7 @@ export const login = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login successful",
+      accessToken,
       user: {
         userid: user.userid,
         name: user.name,
@@ -99,7 +102,7 @@ export const logout = asyncHandler(async (req, res) => {
         message: "Invalid refresh token",
       });
     }
-    await saveRefreshToken(decoded.userid, null);
+    await saveRefreshToken(decoded.id, null);
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
 
@@ -135,5 +138,59 @@ export const currentUser = asyncHandler(async (req, res) => {
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
+  }
+});
+// change password
+export const changePassword = asyncHandler(async (req, res) => {
+  const userId = req.user.userid;
+    const { oldPassword, newPassword, confirmNewPassword } = req.validateData;
+  try {
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+    //check match
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+      });
+    }
+    //get user
+    const user = await getUserById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // check old password
+    const isMatch = await bcrypt.compare(
+      oldPassword,
+      user.hashed_password
+    );
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password is incorrect",
+      });
+    }
+    //hash new password
+    const hashed = await bcrypt.hash(newPassword, 10);
+    // update password
+    await changePassword(userId, hashed);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Change password failed",
+      error: error.message,
+    });
   }
 });
