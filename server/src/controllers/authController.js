@@ -1,12 +1,14 @@
 import { createUser } from "../models/authModel.js";
-import { generateTokens } from "../utils/tokensUtils.js";
+import { verifyRefreshToken, saveRefreshToken } from "../../utils/tokensUtils.js";
+import { generateTokens } from "../../utils/tokensUtils.js";
 import {
   setAccessTokenCookie,
   setRefreshTokenCookie,
-} from "../utils/cookiesUtils.js";
-import { getUserByEmail } from "../models/userModel.js";
+} from "../../utils/cookiesUtils.js";
+import { getUserByEmail, getUserById } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
+
 // Register a new user
 export const register = asyncHandler(async (req, res) => {
   const { name, email, phone, password, role } = req.validateData;
@@ -82,19 +84,36 @@ export const login = asyncHandler(async (req, res) => {
 });
 // Logout user
 export const logout = asyncHandler(async (req, res) => {
-  const token = req.cookies.refreshToken;
-  if (!token) {
-    return res.status(400).json({ message: "No token provided" });
+  try {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "No refresh token provided",
+      });
+    }
+    const decoded = verifyRefreshToken(token);
+    if (!decoded) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid refresh token",
+      });
+    }
+    await saveRefreshToken(decoded.userid, null);
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Logout failed",
+      error: error.message,
+    });
   }
-  const decoded = verifyRefreshToken(token);
-  await saveRefreshToken(decoded.userId, null);
-
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
-
-  return res.status(200).json({
-    message: "Logged out successfully",
-  });
 });
 // current user
 export const currentUser = asyncHandler(async (req, res) => {
