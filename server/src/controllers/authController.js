@@ -1,6 +1,5 @@
 import { createUser } from "../models/authModel.js";
-import { verifyRefreshToken, saveRefreshToken } from "../../utils/tokensUtils.js";
-import { generateTokens } from "../../utils/tokensUtils.js";
+import { generateTokens, verifyRefreshToken } from "../../utils/tokensUtils.js";
 import {
   setAccessTokenCookie,
   setRefreshTokenCookie,
