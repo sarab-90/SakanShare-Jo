@@ -141,7 +141,7 @@ export const currentUser = asyncHandler(async (req, res) => {
   }
 });
 // change password
-export const changePassword = asyncHandler(async (req, res) => {
+export const changePasswordController = asyncHandler(async (req, res) => {
   const userId = req.user.userid;
     const { oldPassword, newPassword, confirmNewPassword } = req.validateData;
   try {
