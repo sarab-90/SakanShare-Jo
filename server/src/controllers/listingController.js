@@ -30,7 +30,9 @@ export const createNewListing = asyncHandler(async (req, res) => {
     longitude,
     is_available,
   } = req.validateData;
-  const owner_id = req.user.userid;
+  const owner_id = req.user.id;
+  console.log("owner_id:", owner_id);
+  
   try {
     if (!title || !price || !owner_id) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -98,9 +100,12 @@ export const getListingsController = asyncHandler(async (req, res) => {
 });
 // Get listing by ID
 export const getListingByIdController = asyncHandler(async (req, res) => {
-  const listingId = req.params.id;
+  const {id} = req.params;
+  console.log("PARAM ID:", id);
+  console.log("REQ PARAMS:", req.params);
+  
   try {
-    const listing = await getListingById(listingId);
+    const listing = await getListingById(id);
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
     }

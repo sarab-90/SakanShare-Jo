@@ -22,54 +22,52 @@ export function UserProvider({ children }) {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     currentUser();
   }, []);
+
   // GET ALL USERS
   const allUsers = async () => {
     try {
       const res = await api.get("/users");
       setUsers(res.data.users || []);
-      if (!res.data.users?.length) {
-        toast.success("No users yet");
-      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch users");
     }
   };
+
   // REGISTER
-  const register = async (data) => {
-    try {
-      const { name, email, password } = data;
-      if (!name || !email || !password) {
-        return toast.error("All fields are required");
-      }
-      const res = await api.post("/auth/register", data);
-      toast.success(res.data.message || "Registered successfully");
-      navigate("/login");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Register failed");
-    }
-  };
+ const register = async (data) => {
+  try {
+    const res = await api.post("/auth/register", data);
+    toast.success(res.data.message || "Registered successfully");
+    navigate("/login");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Register failed");
+  }
+};
   // LOGIN
   const login = async (data) => {
+    console.log("data:", data);
+    
     try {
-      const { email, password } = data;
-      if (!email || !password) {
-        return toast.error("All fields are required");
-      }
       const res = await api.post("/auth/login", data);
+
       toast.success(res.data.message || "Login successful");
+
       await currentUser();
-      const role = res.data.user?.role;
+
+      const role = res.data.user.role;
 
       if (role === "admin") navigate("/admin/dashboard");
       else if (role === "user") navigate("/user/home");
-      else if (role === "landlord") navigate("/landlord/dashboard");
+      else if (role === "landlord") navigate("/create-listing");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
+
   // LOGOUT
   const logout = async () => {
     try {
@@ -81,17 +79,18 @@ export function UserProvider({ children }) {
       toast.error("Logout failed");
     }
   };
+
   // DELETE USER
   const deleteUser = async (id) => {
     try {
       await api.delete(`/users/${id}`);
       toast.success("User deleted");
-
       await allUsers();
     } catch (error) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
   };
+
   // UPDATE PROFILE
   const updateUserProfile = async (data) => {
     try {
@@ -102,23 +101,17 @@ export function UserProvider({ children }) {
       toast.error(error.response?.data?.message || "Update failed");
     }
   };
+
   // CHANGE PASSWORD
   const changeUserPassword = async (data) => {
     try {
-      const { oldPassword, newPassword, confirmNewPassword } = data;
-
-      if (!oldPassword || !newPassword || !confirmNewPassword) {
-        return toast.error("Fill all fields");
-      }
-      if (newPassword !== confirmNewPassword) {
-        return toast.error("Passwords do not match");
-      }
       const res = await api.put("/auth/change-password", data);
       toast.success(res.data.message || "Password changed");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to change password");
     }
   };
+
   return (
     <UserContext.Provider
       value={{

@@ -11,7 +11,7 @@ import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 
 // Register a new user
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, role } = req.validateData;
+  const { name, email, phone, password } = req.validateData;
   if (!name || !email || !phone || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -26,7 +26,7 @@ export const register = asyncHandler(async (req, res) => {
     email,
     phone,
     hashed_password,
-    role,
+    "user",
     true,
   );
   if (!newUser) {

@@ -9,12 +9,13 @@ export const protect = (req, res, next) => {
     });
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+    
     req.user = decoded;
     console.log("Decoded User: ", req.user);
     next();
   } catch (error) {
-    return res.status(500).json({
+    return res.status(401).json({
       success: false,
       message: "Unauthorized. Invalid token",
     });
