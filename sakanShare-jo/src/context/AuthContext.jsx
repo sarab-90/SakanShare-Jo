@@ -60,9 +60,9 @@ export function UserProvider({ children }) {
 
       const role = res.data.user.role;
 
-      if (role === "admin") navigate("/admin/dashboard");
+      if (role === "admin") navigate("/admin/dashboard",);
       else if (role === "user") navigate("/user/home");
-      else if (role === "landlord") navigate("/create-listing");
+      else if (role === "landlord") navigate("/landlord/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
