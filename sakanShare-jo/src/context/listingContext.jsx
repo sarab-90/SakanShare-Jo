@@ -1,6 +1,6 @@
-// → إدارة جلب البيانات (get listings / create listing / delete)import { createContext, useState } from "react";
 import api from "../services/api.js";
 import toast from "react-hot-toast";
+import { createContext, useState } from "react";
 
 export const ListingContext = createContext();
 
@@ -9,18 +9,22 @@ export const ListingProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   // GET ALL LISTINGS
-  const getListings = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/listings");
+ const getListings = async () => {
+  try {
+    setLoading(true);
 
-      setListings(res.data.listings || res.data || []);
-    } catch (error) {
-      toast.error("Failed to load listings");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const res = await api.get("/listings");
+
+    const data = res?.data?.data || [];
+
+    setListings([...data]); 
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to load listings");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // CREATE LISTING
   const createListing = async (data) => {
@@ -28,7 +32,6 @@ export const ListingProvider = ({ children }) => {
       const res = await api.post("/listings", data);
       toast.success("Listing created successfully");
 
-      // تحديث القائمة بعد الإنشاء
       await getListings();
 
       return res.data;
@@ -37,6 +40,16 @@ export const ListingProvider = ({ children }) => {
     }
   };
 
+// delete listing
+const deleteListing = async (id) => {
+  try {
+    await api.delete(`/listings/${id})`);
+    toast.success("Listing deleted successfully");
+    await getListings();
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Delete failed");
+  }
+};
   return (
     <ListingContext.Provider
       value={{
@@ -44,6 +57,7 @@ export const ListingProvider = ({ children }) => {
         loading,
         getListings,
         createListing,
+        deleteListing,
       }}
     >
       {children}

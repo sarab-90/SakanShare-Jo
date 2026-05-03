@@ -38,29 +38,29 @@ export function UserProvider({ children }) {
   };
 
   // REGISTER
- const register = async (data) => {
-  try {
-    const res = await api.post("/auth/register", data);
-    toast.success(res.data.message || "Registered successfully");
-    navigate("/login");
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Register failed");
-  }
-};
+  const register = async (data) => {
+    try {
+      const res = await api.post("/auth/register", data);
+      toast.success(res.data.message || "Registered successfully");
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Register failed");
+    }
+  };
   // LOGIN
   const login = async (data) => {
     console.log("data:", data);
-    
+
     try {
       const res = await api.post("/auth/login", data);
 
       toast.success(res.data.message || "Login successful");
 
-      await currentUser();
+      setUser(res.data.user);
 
       const role = res.data.user.role;
 
-      if (role === "admin") navigate("/admin/dashboard",);
+      if (role === "admin") navigate("/admin");
       else if (role === "user") navigate("/user/home");
       else if (role === "landlord") navigate("/landlord/dashboard");
     } catch (error) {

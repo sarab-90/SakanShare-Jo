@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 
 import { UserProvider } from "./context/AuthContext.jsx";
+import { ListingProvider } from "./context/ListingContext.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,9 +15,11 @@ createRoot(document.getElementById("root")).render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
+      <ListingProvider>
         <UserProvider>
           <App />
         </UserProvider>
+        </ListingProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>

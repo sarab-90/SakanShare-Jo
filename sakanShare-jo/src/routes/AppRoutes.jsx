@@ -20,6 +20,7 @@ import LandlordDashboard from "../pages/landlord/LandlordDashboard.jsx";
 }
 import Login from "../pages/auth/Login.jsx";
 import Register from "../pages/auth/Register.jsx";
+import ListingsManagement from "../pages/admin/ListingsManagement.jsx";
 
 export default function AppRoutes() {
   return (
@@ -66,9 +67,10 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      {/* <Route path="listings" element={<AdminListings />} /> */}
-      
+        <Route index element={<AdminDashboard />} />
+        {/* <Route path="users" element={<UsersPage />} /> */}
+        <Route path="/admin/listings" element={<ListingsManagement />} />
+          {/* <Route path="bookings" element={<BookingsPage />} /> */}
       </Route>
     </Routes>
   );

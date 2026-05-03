@@ -29,7 +29,6 @@ const ListingsPage = () => {
       setLoading(true);
 
       const res = await api.get("/listings");
-      console.log("ALL LISTINGS :", res.data.data);
       setListings(res.data.data);
     } catch (err) {
       console.error(err);
