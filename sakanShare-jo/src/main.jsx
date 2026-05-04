@@ -5,6 +5,7 @@ import App from "./App.jsx";
 
 import { UserProvider } from "./context/AuthContext.jsx";
 import { ListingProvider } from "./context/ListingContext.jsx";
+import { RequestProvider } from "./context/RequestContext.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root")).render(
       <BrowserRouter>
       <ListingProvider>
         <UserProvider>
+          <RequestProvider>
           <App />
+          </RequestProvider>
         </UserProvider>
         </ListingProvider>
       </BrowserRouter>

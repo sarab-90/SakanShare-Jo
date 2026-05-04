@@ -21,6 +21,8 @@ import LandlordDashboard from "../pages/landlord/LandlordDashboard.jsx";
 import Login from "../pages/auth/Login.jsx";
 import Register from "../pages/auth/Register.jsx";
 import ListingsManagement from "../pages/admin/ListingsManagement.jsx";
+import UsersManagement from "../pages/admin/UsersManagement.jsx";
+import RequestsManagement from "../pages/admin/RequestsManagement.jsx";
 
 export default function AppRoutes() {
   return (
@@ -68,9 +70,9 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<AdminDashboard />} />
-        {/* <Route path="users" element={<UsersPage />} /> */}
+        <Route path="/admin/users" element={<UsersManagement />} />
         <Route path="/admin/listings" element={<ListingsManagement />} />
-          {/* <Route path="bookings" element={<BookingsPage />} /> */}
+          <Route path="/admin/requests" element={<RequestsManagement />} />
       </Route>
     </Routes>
   );

@@ -10,6 +10,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import usersRoutes from "./src/routes/usersRoutes.js";
 import listingRoutes from "./src/routes/listingRoutes.js";
 import preferencesRoutes from "./src/routes/preferencesRoutes.js";
+import requestRouters from "./src/routes/requestRouters.js"
 
 import {errorHandler} from "./src/middleware/errorHandlerMiddleware.js";
 import {globalRateLimitMiddleware} from "./src/middleware/globalRateLimitMiddleware.js";
@@ -33,6 +34,7 @@ app.use('/api', authRoutes);
 app.use('/api', usersRoutes);
 app.use('/api', listingRoutes);
 app.use('/api', preferencesRoutes);
+app.use('/api', requestRouters)
 
 app.use(errorHandler);
 app.listen(process.env.PORT, () => {

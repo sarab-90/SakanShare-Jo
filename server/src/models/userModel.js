@@ -22,7 +22,7 @@ export const getUserByEmail = async (email) => {
 // Update user 
 export const updateUser = async (id, name, email, phone) => {
     const result = await pool.query(
-        `UPDATE users SET name = $1, email = $2, phone = $3 WHERE userid = $4 RETURNING name, email, phone`,
+        `UPDATE users SET name = $1, email = $2, phone = $3 WHERE userid = $4 RETURNING *`,
         [name, email, phone, id]
     );
     return result.rows[0];

@@ -3,6 +3,8 @@ import {createRequestController,
     rejectRequestController,
     getRequestsForOwnerController,
     getMyRequestsController,
+    getAllRequestsController,
+    markAsViewedController,
 } from "../controllers/requestsController.js";
 import {createRequestSchema} from "../validation/requestsValidation.js";
 import { validate } from "../middleware/validateMiddleware.js";
@@ -17,5 +19,7 @@ router.put("/request/accept/:request_id", protect, authorizeRoles("admin", "land
 router.put( "/request/reject/:request_id", protect, authorizeRoles("admin", "landlord"), rejectRequestController);
 router.get("/request/owner", protect, authorizeRoles("admin", "landlord"), getRequestsForOwnerController);
 router.get( "/request/my", protect, authorizeRoles("user"), getMyRequestsController);
+router.get("/request/all", protect, authorizeRoles("admin"), getAllRequestsController);
+router.put("/request/view/:request_id", protect, authorizeRoles("admin", "landlord"), markAsViewedController);
 
 export default router;

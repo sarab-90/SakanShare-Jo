@@ -34,7 +34,7 @@ const ListingsManagement = () => {
   if (loading) {
     return (
       <Box sx={{ textAlign: "center", mt: 10 }}>
-        <CircularProgress />
+        <CircularProgress color="secondary" />
       </Box>
     );
   }
@@ -42,68 +42,102 @@ const ListingsManagement = () => {
   return (
     <Box>
       {/* HEADER */}
-      <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 900,
-            color: "#0F172A",
-          }}
-        >
-          Listings Management
-        </Typography>
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              color: "text.primary",
+            }}
+          >
+            Listings Management
+          </Typography>
 
-        <Typography sx={{ color: "#64748B", mt: 1 }}>
-          Manage all housing listings
-        </Typography>
+          <Typography
+            sx={{
+              color: "text.secondary",
+              mt: 1,
+            }}
+          >
+            Manage all housing listings
+          </Typography>
+        </Box>
+
+        <Chip
+          label={`${listings.length} Listings`}
+          color="secondary"
+          sx={{
+            fontWeight: 700,
+            px: 1,
+          }}
+        />
       </Box>
 
       {/* TABLE */}
       <Paper
         elevation={0}
         sx={{
-          borderRadius: 4,
           overflow: "hidden",
           border: "1px solid #E2E8F0",
+          bgcolor: "background.paper",
         }}
       >
         <TableContainer>
           <Table>
-            <TableHead
-              sx={{
-                bgcolor: "#F8FAFC",
-              }}
-            >
-              <TableRow>
-                <TableCell sx={{ fontWeight: 800 }}>Image</TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>Title</TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>City</TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>Price</TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>
-                  Occupants
-                </TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>
-                  Availability
-                </TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>
-                  Created At
-                </TableCell>
-
-                <TableCell sx={{ fontWeight: 800 }}>
-                  Actions
-                </TableCell>
+            {/* TABLE HEAD */}
+            <TableHead>
+              <TableRow
+                sx={{
+                  bgcolor: "#F8FAFC",
+                }}
+              >
+                {[
+                  "Image",
+                  "Title",
+                  "City",
+                  "Price",
+                  "Occupants",
+                  "Availability",
+                  "Created",
+                  "Actions",
+                ].map((head) => (
+                  <TableCell
+                    key={head}
+                    sx={{
+                      fontWeight: 800,
+                      color: "text.secondary",
+                      fontSize: 13,
+                      borderBottom: "1px solid #E2E8F0",
+                    }}
+                  >
+                    {head}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
 
+            {/* TABLE BODY */}
             <TableBody>
               {listings?.map((listing) => (
-                <TableRow key={listing.listing_id} hover>
+                <TableRow
+                  key={listing.listing_id}
+                  hover
+                  sx={{
+                    transition: "0.2s",
+
+                    "&:hover": {
+                      bgcolor: "#F8FAFC",
+                    },
+                  }}
+                >
                   {/* IMAGE */}
                   <TableCell>
                     <Avatar
@@ -115,30 +149,55 @@ const ListingsManagement = () => {
                       sx={{
                         width: 70,
                         height: 55,
-                        borderRadius: 2,
+                        borderRadius: 3,
                       }}
                     />
                   </TableCell>
 
                   {/* TITLE */}
                   <TableCell>
-                    <Typography sx={{ fontWeight: 700 }}>
+                    <Typography
+                      sx={{
+                        fontWeight: 700,
+                        color: "text.primary",
+                      }}
+                    >
                       {listing.title}
                     </Typography>
                   </TableCell>
 
                   {/* CITY */}
-                  <TableCell>{listing.city}</TableCell>
+                  <TableCell
+                    sx={{
+                      color: "text.secondary",
+                    }}
+                  >
+                    {listing.city}
+                  </TableCell>
 
                   {/* PRICE */}
                   <TableCell>
-                    {listing.price} {listing.currency}
+                    <Typography
+                      sx={{
+                        fontWeight: 700,
+                        color: "secondary.main",
+                      }}
+                    >
+                      {listing.price} {listing.currency}
+                    </Typography>
                   </TableCell>
 
                   {/* OCCUPANTS */}
                   <TableCell>
-                    {listing.current_occupants} /{" "}
-                    {listing.max_occupants}
+                    <Chip
+                      label={`${listing.current_occupants} / ${listing.max_occupants}`}
+                      size="small"
+                      sx={{
+                        bgcolor: "#EEF2FF",
+                        color: "#4338CA",
+                        fontWeight: 700,
+                      }}
+                    />
                   </TableCell>
 
                   {/* AVAILABILITY */}
@@ -149,17 +208,24 @@ const ListingsManagement = () => {
                           ? "Available"
                           : "Unavailable"
                       }
+                      size="small"
                       color={
                         listing.is_available
                           ? "success"
                           : "error"
                       }
-                      size="small"
+                      sx={{
+                        fontWeight: 700,
+                      }}
                     />
                   </TableCell>
 
                   {/* CREATED */}
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      color: "text.secondary",
+                    }}
+                  >
                     {new Date(
                       listing.created_at,
                     ).toLocaleDateString()}
@@ -169,24 +235,24 @@ const ListingsManagement = () => {
                   <TableCell>
                     <Stack direction="row" spacing={1}>
                       <Button
-                        size="small"
                         variant="outlined"
+                        size="small"
                       >
                         View
                       </Button>
 
                       <Button
-                        size="small"
-                        color="warning"
                         variant="contained"
+                        color="secondary"
+                        size="small"
                       >
                         Edit
                       </Button>
 
                       <Button
-                        size="small"
-                        color="error"
                         variant="contained"
+                        color="error"
+                        size="small"
                         onClick={() =>
                           deleteListing(listing.listing_id)
                         }
@@ -204,7 +270,10 @@ const ListingsManagement = () => {
                   <TableCell
                     colSpan={8}
                     align="center"
-                    sx={{ py: 5 }}
+                    sx={{
+                      py: 6,
+                      color: "text.secondary",
+                    }}
                   >
                     No listings found
                   </TableCell>

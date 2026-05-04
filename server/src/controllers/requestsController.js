@@ -6,6 +6,8 @@ import {
   getRequestById,
   rejectRequest,
   getMyRequests,
+  getAllRequests,
+  markRequestAsViewed,
 } from "../models/requestsModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 import { getListingById } from "../models/listingModel.js";
@@ -137,4 +139,43 @@ export const getMyRequestsController = asyncHandler(async (req, res) => {
             error: error.message
         });
     }
+});
+// GET ALL REQUESTS (ADMIN)
+export const getAllRequestsController = asyncHandler(async (req, res) => {
+  try {
+    const requests = await getAllRequests();
+
+    return res.status(200).json({
+      success: true,
+      count: requests.length,
+      requests,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch requests",
+      error: error.message,
+    });
+  }
+});
+//
+
+export const markAsViewedController = asyncHandler(async (req, res) => {
+  const { request_id } = req.params;
+
+  try {
+    const updated = await markRequestAsViewed(request_id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Request marked as viewed",
+      request: updated,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });

@@ -81,3 +81,35 @@ export const getMyRequests = async (sender_id) => {
     const result = await pool.query(query, [sender_id]);
     return result.rows;
 };
+// GET ALL REQUESTS (ADMIN)
+export const getAllRequests = async () => {
+  const query = `
+    SELECT 
+      rr.*,
+      u.name AS sender_name,
+      sh.title AS listing_title,
+      sh.city,
+      sh.price
+    FROM roommate_requests rr
+    JOIN users u 
+      ON rr.sender_id = u.userid
+    JOIN shared_housing sh 
+      ON rr.listing_id = sh.listing_id
+    ORDER BY rr.created_at DESC
+  `;
+
+  const result = await pool.query(query);
+
+  return result.rows;
+};
+// Request As Viewed
+export const markRequestAsViewed = async (request_id) => {
+  const query = `
+    UPDATE roommate_requests
+    SET status = 'viewed'
+    WHERE request_id = $1
+    RETURNING *
+  `;
+  const result = await pool.query(query, [request_id]);
+  return result.rows[0];
+};

@@ -10,6 +10,11 @@ import {
   Button,
   Stack,
 } from "@mui/material";
+import axios from "axios";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FemaleIcon from "@mui/icons-material/Female";
+import MaleIcon from "@mui/icons-material/Male";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
@@ -22,7 +27,7 @@ const AdminDashboard = () => {
   const { users, allUsers, deleteUser } = useContext(UserContext);
   const context = useContext(ListingContext);
 
-const { listings = [], getListings } = useContext(ListingContext);
+  const { listings = [], getListings } = useContext(ListingContext);
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -64,6 +69,26 @@ const { listings = [], getListings } = useContext(ListingContext);
     },
   ];
 
+  const [preferencesStats, setPreferencesStats] = useState({
+    total: 0,
+    avgBudget: 0,
+    smoking: [],
+    gender: [],
+  });
+
+  useEffect(() => {
+    const getPreferencesStats = async () => {
+      try {
+        const res = await api.get("/api/preferences/stats");
+        setPreferencesStats(res.data.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getPreferencesStats();
+  }, []);
+
   return (
     <Box sx={{ bgcolor: "#F8FAFC", minHeight: "100vh", py: 4 }}>
       <Container maxWidth="xl">
@@ -87,17 +112,65 @@ const { listings = [], getListings } = useContext(ListingContext);
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             <Paper sx={{ p: 3, borderRadius: 3 }}>
               <Typography>Listings</Typography>
               <Typography variant="h4">{safeListings.length}</Typography>
             </Paper>
           </Grid>
         </Grid>
+        {/* ================= PREFERENCES ================= */}
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid item xs={12}>
+            <Paper sx={{ p: 3, borderRadius: 3 }}>
+              <Typography sx={{ fontWeight: 800, mb: 2 }}>
+                Preferences Insights
+              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography color="text.secondary">
+                      Total Preferences
+                    </Typography>
+                    <Typography variant="h5" fontWeight={800}>
+                      {preferencesStats.total}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography color="text.secondary">
+                      Average Budget
+                    </Typography>
+                    <Typography variant="h5" fontWeight={800}>
+                      {Math.round(preferencesStats.avgBudget || 0)}
+                    </Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography color="text.secondary">
+                      Smoking Distribution
+                    </Typography>
+
+                    {(preferencesStats.smoking || []).map((s, i) => (
+                      <Typography key={i}>
+                        {s.smoking ? "Smoker" : "Non-Smoker"}: {s.count}
+                      </Typography>
+                    ))}
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
 
         {/* CHART */}
         <Grid container spacing={3} sx={{ mt: 3 }}>
-          <Grid item xs={6} md={6}>
+          <Grid xs={6} md={6}>
             <Paper sx={{ p: 3, borderRadius: 3 }}>
               <Typography sx={{ fontWeight: 800, mb: 2 }}>
                 Users Roles
@@ -110,15 +183,12 @@ const { listings = [], getListings } = useContext(ListingContext);
                     dataKey="value"
                     outerRadius={80}
                     labelLine={false}
-                    label={({ name, value }) =>
-                      `${name}: ${value}`
-                      }
-                      >
-                      {roleData.map((_, i) => (
-                        <Cell key={i} fill={COLORS[i]} />
-                      ))}
-                    </Pie>
-        
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {roleData.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i]} />
+                    ))}
+                  </Pie>
                 </PieChart>
               </ResponsiveContainer>
             </Paper>
@@ -126,7 +196,7 @@ const { listings = [], getListings } = useContext(ListingContext);
 
           {/* USERS */}
           <Grid item xs={12} md={12}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
+            <Paper sx={{ p: 5, borderRadius: 3 }}>
               <Typography sx={{ fontWeight: 800, mb: 15 }}>
                 Users Management
               </Typography>
