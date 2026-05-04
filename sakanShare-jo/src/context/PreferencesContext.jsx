@@ -10,6 +10,7 @@ export const PreferencesProvider = ({ children }) => {
     smoking: [],
     gender: [],
   });
+  const [completedOnboarding, setCompletedOnboarding] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +28,10 @@ export const PreferencesProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const completeOnboarding = async (data) => {
+  await api.post("/preferences", data);
+  setCompletedOnboarding(true);
+};
 
   return (
     <PreferencesContext.Provider
@@ -34,6 +39,7 @@ export const PreferencesProvider = ({ children }) => {
         stats,
         loading,
         getPreferencesStats,
+        completeOnboarding,
       }}
     >
       {children}

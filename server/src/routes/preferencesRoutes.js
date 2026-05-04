@@ -19,7 +19,7 @@ router.post(
   "/preferences",
   protect,
   validate(preferencesSchema),
-  createUserPreferences
+  createUserPreferences,
 );
 
 router.get("/preferences", protect, getUserPreferences);
@@ -28,7 +28,7 @@ router.put(
   "/preferences",
   protect,
   validate(preferencesSchema),
-  updateUserPreferences
+  updateUserPreferences,
 );
 
 /* ADMIN */
@@ -36,7 +36,7 @@ router.get(
   "/admin/preferences/stats",
   protect,
   authorizeRoles("admin"),
-  getPreferencesStats
+  getPreferencesStats,
 );
 
 export default router;

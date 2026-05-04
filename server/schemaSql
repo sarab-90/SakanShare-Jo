@@ -10,10 +10,30 @@ create table users (
 );
 select * from users
 
+UPDATE users
+SET role = 'admin'
+WHERE email = 'sarab1990@admin.com';
+
+ALTER TABLE users ADD COLUMN refresh_token TEXT;
+
+ALTER TABLE users
+ADD COLUMN onboarding_completed BOOLEAN DEFAULT false;
+ALTER TABLE users
+ADD CONSTRAINT role_check 
+CHECK (role IN ('user', 'admin', 'landlord'));
+
+UPDATE users
+SET hashed_password = 'Sarab1990@@'
+WHERE userid =1;
+
+
 insert into users(name, email , phone, hashed_password, role) 
-values ('sarab', 'sarab@admin.com','0777408634', 'Sarab1990#', 'admin');
+values ('sarab', 'sarab90@admin.com','0777000000', 'Sarab1990***', 'admin');
 insert into users(name, email , phone, hashed_password, role) 
 values ('mesk', 'mesk@user.com','0787408634', 'Mesk2026##', 'user');
+insert into users(name, email , phone, hashed_password, role) 
+values ('ali', 'ali@landlord.com','0790000000', 'Ali2026#', 'landlord');
+
 
 CREATE TABLE preferences (
     pref_id SERIAL PRIMARY KEY,
@@ -33,6 +53,15 @@ CREATE TABLE preferences (
 	CHECK (min_age IS NULL OR max_age IS NULL OR min_age <= max_age)
 );
 select * from preferences
+
+ALTER TABLE preferences
+ADD COLUMN city VARCHAR(50);
+
+ALTER TABLE preferences
+ADD COLUMN preferred_room_type VARCHAR(20);
+
+ALTER TABLE preferences
+ADD COLUMN furnished BOOLEAN;
 
 CREATE TABLE shared_housing (
     listing_id SERIAL PRIMARY KEY,
@@ -78,6 +107,38 @@ CREATE TABLE roommate_requests (
 	);
 select * from roommate_requests
 
+ALTER TABLE roommate_requests
+DROP CONSTRAINT roommate_requests_status_check;
+
+ALTER TABLE roommate_requests
+ADD CONSTRAINT roommate_requests_status_check
+CHECK (status IN (
+  'pending',
+  'viewed',
+  'accepted',
+  'rejected',
+  'canceled',
+  'expired'
+));
+INSERT INTO roommate_requests (
+  sender_id,
+  listing_id,
+  status,
+  message
+)
+VALUES (
+  3,
+  1,
+  'pending',
+  'Hello, I would like '
+);
+INSERT INTO roommate_requests (sender_id, listing_id, status, message)
+VALUES 
+(1, 1, 'pending', 'Pending request example'),
+(2, 1, 'viewed', 'Viewed request example'),
+(3, 1, 'accepted', 'Accepted request example'),
+(1, 1, 'rejected', 'Rejected request example');
+
 CREATE TABLE messages (
     message_id SERIAL PRIMARY KEY,
     sender_id INT REFERENCES users(userid) ON DELETE CASCADE,
@@ -89,7 +150,8 @@ CREATE TABLE messages (
 	CHECK (sender_id <> receiver_id)
 );
 select * from messages
-
+ALTER TABLE messages
+ADD COLUMN conversation_id INT;
 
 CREATE TABLE reviews (
     review_id SERIAL PRIMARY KEY,
@@ -103,5 +165,16 @@ CREATE TABLE reviews (
 );
 select * from reviews
 
+CREATE TABLE user_match_requests (
+    request_id SERIAL PRIMARY KEY,
+    sender_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    receiver_id INT REFERENCES users(userid) ON DELETE CASCADE,
+    status VARCHAR(20) DEFAULT 'pending'
+        CHECK (status IN ('pending', 'accepted', 'rejected', 'canceled')),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+    CONSTRAINT no_self_request CHECK (sender_id <> receiver_id)
+);
+select * from user_match_requests
 

@@ -5,6 +5,7 @@ import MainLayout from "../layouts/MainLayout.jsx";
 // Layouts
 import AdminLayout from "../layouts/AdminLayout.jsx";
 import LandlordLayout from "../layouts/LandlordLayout.jsx";
+import UserLayout from "../layouts/UserLayout.jsx";
 
 // Pages
 import Home from "../pages/home/Home";
@@ -14,6 +15,7 @@ import CreateListing from "../pages/listings/CreateListing";
 
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import LandlordDashboard from "../pages/landlord/LandlordDashboard.jsx";
+import UserHome from "../pages/user/UserHome.jsx"
 
 {
   /* AUTH */
@@ -23,6 +25,10 @@ import Register from "../pages/auth/Register.jsx";
 import ListingsManagement from "../pages/admin/ListingsManagement.jsx";
 import UsersManagement from "../pages/admin/UsersManagement.jsx";
 import RequestsManagement from "../pages/admin/RequestsManagement.jsx";
+import OnboardingWizard from "../pages/onboarding/OnboardingWizard.jsx";
+import Matches from "../pages/user/Matches.jsx";
+
+
 
 export default function AppRoutes() {
   return (
@@ -40,13 +46,19 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
 
       {/* USER */}
-      {/* <Route element={
-        <ProtectedRoute allowedRoles={["user"]}>
-          <UserLayout />
-        </ProtectedRoute>
-      }>
-        <Route path="/user/home" element={<Home />} />
-      </Route> */}
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <UserLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/user/home" element={<UserHome />} />
+        <Route path="/onboarding" element={<OnboardingWizard />} />
+        {/* <Route path="/user/preferences" element={<UserPreferences />} /> */}
+        <Route path="/user/matches" element={<Matches />} />
+        {/* <Route path="/user/profile" element={<Profile />} /> */}
+      </Route>
 
       {/* LANDLORD */}
       <Route
@@ -72,7 +84,7 @@ export default function AppRoutes() {
         <Route index element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UsersManagement />} />
         <Route path="/admin/listings" element={<ListingsManagement />} />
-          <Route path="/admin/requests" element={<RequestsManagement />} />
+        <Route path="/admin/requests" element={<RequestsManagement />} />
       </Route>
     </Routes>
   );

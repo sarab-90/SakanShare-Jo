@@ -8,9 +8,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (loading) {
     return <div>Loading...</div>;
   }
-
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+  if (user.onboardingCompleted === false) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   const role = user.role?.trim().toLowerCase();
@@ -21,4 +23,5 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   return children;
 };
+
 export default ProtectedRoute;
