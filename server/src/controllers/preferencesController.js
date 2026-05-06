@@ -1,40 +1,51 @@
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
-
 import {
   createPreferences,
   getPreferencesByUserId,
   updatePreferences,
-  getTotalPreferences,
-  getSmokingStats,
-  getAvgBudget,
-  getGenderStats,
 } from "../models/preferencesModel.js";
 
-/* ================= USER ================= */
-
-// CREATE
 export const createUserPreferences = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
   const data = req.validateData;
 
   const existing = await getPreferencesByUserId(userid);
+
   if (existing) {
-    return res.status(409).json({ message: "Preferences already exist" });
+    return res.status(409).json({
+
+      success: false,
+      message: "Preferences already exist",
+    });
   }
-
-  const newPref = await createPreferences(userid, ...Object.values(data));
-
+  const newPref = await createPreferences(
+    userid,
+    data.gender,
+    data.min_age,
+    data.max_age,
+    data.smoking,
+    data.sleep_time,
+    data.cleanliness,
+    data.noise_tolerance,
+    data.pets_allowed,
+    data.guest_policy,
+    data.additional_notes,
+    data.budget,
+    data.city,
+    data.preferred_room_type,
+    data.furnished
+  );
   return res.status(201).json({
     success: true,
     data: newPref,
   });
 });
 
-// GET
 export const getUserPreferences = asyncHandler(async (req, res) => {
-  const userid = req.user.userid;
+ const userid = req.user.userid;
 
   const data = await getPreferencesByUserId(userid);
+  console.log("USER ID:", req.user);
 
   return res.status(200).json({
     success: true,
@@ -42,26 +53,45 @@ export const getUserPreferences = asyncHandler(async (req, res) => {
   });
 });
 
-// UPDATE
 export const updateUserPreferences = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
+  const data = req.validateData; 
 
-  const updated = await updatePreferences(userid, req.validateData);
+  const updated = await updatePreferences(userid, data);
 
+  if (!updated) {
+    const newPref = await createPreferences(
+      userid,
+      data.gender,
+      data.min_age,
+      data.max_age,
+      data.smoking,
+      data.sleep_time,
+      data.cleanliness,
+      data.noise_tolerance,
+      data.pets_allowed,
+      data.guest_policy,
+      data.additional_notes,
+      data.budget,
+      data.city,
+      data.preferred_room_type,
+      data.furnished
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Preferences created successfully",
+      data: newPref,
+    });
+  }
   return res.status(200).json({
     success: true,
+    message: "Preferences updated successfully",
     data: updated,
   });
 });
 
-/* ================= ADMIN STATS ================= */
-
 export const getPreferencesStats = asyncHandler(async (req, res) => {
-  const total = await getTotalPreferences();
-  const smoking = await getSmokingStats();
-  const avgBudget = await getAvgBudget();
-  const gender = await getGenderStats();
-
   return res.status(200).json({
     success: true,
     data: {

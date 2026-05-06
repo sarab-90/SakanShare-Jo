@@ -1,22 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
+  Box, Paper, Typography, TextField, Button, Stack, Table,
+  TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Chip, InputAdornment, IconButton, Tooltip, Avatar
 } from "@mui/material";
+import { Search, Edit2, Trash2, UserPlus } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { UserContext } from "../../context/AuthContext.jsx";
 import EditUserModal from "../../components/admin/EditUserModal.jsx";
+import api from "../../services/api.js";
 
 const UsersManagement = () => {
   const { users, allUsers, deleteUser } = useContext(UserContext);
@@ -24,117 +17,123 @@ const UsersManagement = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [mode, setMode] = useState("edit"); // أضفنا حالة لتحديد هل نحن في وضع إضافة أم تعديل
 
   useEffect(() => {
     allUsers();
   }, []);
 
   const filtered = (users || []).filter((u) =>
-    u?.name?.toLowerCase().includes(search.toLowerCase()),
+    u?.name?.toLowerCase().includes(search.toLowerCase()) ||
+    u?.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleEdit = (user) => {
+  // فتح المودال للإضافة
+  const handleOpenAdd = () => {
+    setMode("add");
+    setSelectedUser(null); // نرسل مستخدم فارغ للإضافة
+    setEditOpen(true);
+  };
+
+  // فتح المودال للتعديل
+  const handleOpenEdit = (user) => {
+    setMode("edit");
     setSelectedUser(user);
     setEditOpen(true);
   };
 
-  const handleSave = async (id, name, email, phone) => {
-    try {
-      await api.put(`/users/${id}`, {
-        name,
-        email,
-        phone,
+  const handleSave = async (id, name, email, phone, role, is_active, password) => {
+  const loadingToast = toast.loading(mode === "add" ? "Registering new user..." : "Updating user...");
+  
+  try {
+    if (mode === "add") {
+      // 1. استدعاء راوت الـ register لأن راوت الـ users لا يدعم POST
+      // تأكدي من المسار الصحيح لديكِ (غالباً /auth/register)
+      await api.post("/auth/register", { 
+        name, 
+        email, 
+        phone, 
+        password: password || "DefaultPassword123", // استخدام الباسورد المدخل أو الافتراضي
+        role 
       });
-
-      setEditOpen(false);
-      await allUsers();
-    } catch (err) {
-      console.log(err);
+      toast.success("User registered successfully!", { id: loadingToast });
+    } else {
+      // 2. تحديث المستخدم الحالي (راوت الـ users يدعم PUT)
+      await api.put(`/users/${id}`, { name, email, phone, role, is_active });
+      toast.success("User updated successfully!", { id: loadingToast });
     }
-  };
+    
+    setEditOpen(false);
+    await allUsers(); // تحديث الجدول
+  } catch (err) {
+    console.error("Save Error:", err);
+    // إظهار رسالة الخطأ القادمة من السيرفر (مثل: الإيميل موجود مسبقاً)
+    const errorMsg = err.response?.data?.message || "Operation failed";
+    toast.error(errorMsg, { id: loadingToast });
+  }
+};
 
   return (
-    <Box>
-      <Typography variant="h5" fontWeight={700} mb={2}>
-        Users Management
-      </Typography>
+    <Box sx={{ p: 1 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box>
+          <Typography variant="h5" fontWeight={800} color="primary.main">Users Management</Typography>
+          <Typography variant="body2" color="text.secondary">Manage platform members</Typography>
+        </Box>
+        {/* زر الإضافة يستخدم نفس المودال */}
+        <Button 
+          variant="contained" 
+          startIcon={<UserPlus size={18}/>} 
+          onClick={handleOpenAdd}
+          sx={{ borderRadius: 2 }}
+        >
+          Add New User
+        </Button>
+      </Stack>
 
       <TextField
         fullWidth
         placeholder="Search users..."
         onChange={(e) => setSearch(e.target.value)}
-        sx={{ mb: 2 }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start"><Search size={20} /></InputAdornment>,
+        }}
+        sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 3, bgcolor: "white" } }}
       />
 
-      <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
+      <Paper sx={{ borderRadius: 4, overflow: "hidden", border: "1px solid #f1f5f9" }}>
         <TableContainer>
           <Table>
-            {/* HEADER */}
             <TableHead>
               <TableRow sx={{ backgroundColor: "#F8FAFC" }}>
-                <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>User Info</TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700 }}>
-                  Actions
-                </TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, pr: 4 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
-
-            {/* BODY */}
             <TableBody>
               {filtered.map((u) => (
                 <TableRow key={u.userid} hover>
-                  <TableCell>{u.name}</TableCell>
-
-                  <TableCell sx={{ color: "text.secondary" }}>
-                    {u.email}
-                  </TableCell>
-
                   <TableCell>
-                    <Chip
-                      label={u.role}
-                      size="small"
-                      color={
-                        u.role === "admin"
-                          ? "error"
-                          : u.role === "landlord"
-                            ? "warning"
-                            : "primary"
-                      }
-                    />
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Avatar sx={{ bgcolor: "primary.light", fontSize: 14 }}>{u.name?.charAt(0)}</Avatar>
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={600}>{u.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">{u.email}</Typography>
+                      </Box>
+                    </Stack>
                   </TableCell>
-
                   <TableCell>
-                    <Chip
-                      label={u.is_active ? "Active" : "Inactive"}
-                      size="small"
-                      color={u.is_active ? "success" : "default"}
-                    />
+                    <Chip label={u.role} size="small" />
                   </TableCell>
-
-                  <TableCell align="right">
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      justifyContent="flex-end"
-                    >
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => handleEdit(u)}
-                      >
-                        Edit
-                      </Button>
-
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => deleteUser(u.userid)}
-                      >
-                        Delete
-                      </Button>
+                  <TableCell>
+                    <Typography variant="body2">{u.is_active ? "Active" : "Inactive"}</Typography>
+                  </TableCell>
+                  <TableCell align="right" sx={{ pr: 2 }}>
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      <IconButton onClick={() => handleOpenEdit(u)} color="primary"><Edit2 size={18} /></IconButton>
+                      <IconButton onClick={() => deleteUser(u.userid)} color="error"><Trash2 size={18} /></IconButton>
                     </Stack>
                   </TableCell>
                 </TableRow>
@@ -144,13 +143,16 @@ const UsersManagement = () => {
         </TableContainer>
       </Paper>
 
-      {/* MODAL */}
-      <EditUserModal
-        open={editOpen}
-        user={selectedUser}
-        onClose={() => setEditOpen(false)}
-        onSave={handleSave}
-      />
+      {/* استخدمنا نفس المودال الموجود عندك أصلاً */}
+      {editOpen && (
+        <EditUserModal
+          open={editOpen}
+          user={selectedUser}
+          mode={mode} // نمرر الوضع للمودال ليعرف هل يظهر "إضافة" أم "تعديل"
+          onClose={() => setEditOpen(false)}
+          onSave={handleSave}
+        />
+      )}
     </Box>
   );
 };

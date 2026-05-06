@@ -10,7 +10,6 @@ import {
   IconButton,
   Stack,
 } from "@mui/material";
-
 import { Logout, Settings } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/AuthContext.jsx";
@@ -28,7 +27,8 @@ const AdminTopbar = () => {
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    navigate("/admin/profile")
+    setAnchorEl()
   };
 
   const handleLogout = () => {
@@ -48,7 +48,6 @@ const AdminTopbar = () => {
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        
         {/* LEFT */}
         <Typography
           sx={{
@@ -86,8 +85,8 @@ const AdminTopbar = () => {
             onClose={handleMenuClose}
           >
             <MenuItem onClick={handleMenuClose}>
-              <Settings fontSize="small" sx={{ mr: 1 }} />
-              Settings
+              {/* <Profile fontSize="small" sx={{ mr: 1 }} /> */}
+              Profile
             </MenuItem>
 
             <MenuItem onClick={handleLogout}>

@@ -11,9 +11,11 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme/theme.js";
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
    <StrictMode>
+    <Toaster position="center-top" />
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>

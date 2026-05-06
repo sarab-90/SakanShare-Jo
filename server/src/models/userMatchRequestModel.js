@@ -58,7 +58,7 @@ export const updateMatchRequestStatus = async (request_id, status) => {
   return result.rows[0];
 };
 
-// CHECK DUPLICATE REQUEST (important)
+// CHECK DUPLICATE REQUEST 
 export const checkExistingRequest = async (sender_id, receiver_id) => {
   const result = await pool.query(
     `SELECT * FROM user_match_requests
@@ -68,4 +68,25 @@ export const checkExistingRequest = async (sender_id, receiver_id) => {
   );
 
   return result.rows[0];
+};
+export const getDiscoveryMatches = async (userId) => {
+  const result = await pool.query(
+    `SELECT 
+        u.userid, 
+        u.name,
+        p.city,
+        p.budget,
+        p.smoking,
+        (
+          (CASE WHEN p.city = (SELECT city FROM preferences WHERE userid = $1) THEN 40 ELSE 0 END) +
+          (CASE WHEN ABS(p.budget - (SELECT budget FROM preferences WHERE userid = $1)) <= 50 THEN 30 ELSE 0 END) +
+          (CASE WHEN p.smoking = (SELECT smoking FROM preferences WHERE userid = $1) THEN 30 ELSE 0 END)
+        ) AS match_score
+     FROM users u
+     JOIN preferences p ON u.userid = p.userid
+     WHERE u.userid != $1
+     ORDER BY match_score DESC`,
+    [userId]
+  );
+  return result.rows;
 };

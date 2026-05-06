@@ -4,20 +4,23 @@ import {
   getMySentMatchRequests,
   getMyReceivedMatchRequests,
   changeMatchRequestStatus,
+  getMatchesController,
 } from "../controllers/userMatchRequestController.js";
 
 import { protect } from "../middleware/protectMiddleware.js";
 import { validate } from "../middleware/validateMiddleware.js";
+
 const router = express.Router();
 
-// CREATE
 router.post("/", protect, sendMatchRequest);
 
-// GET
 router.get("/sent", protect, getMySentMatchRequests);
+
 router.get("/received", protect, getMyReceivedMatchRequests);
 
-// UPDATE
 router.patch("/:request_id", protect, changeMatchRequestStatus);
+
+router.get("/discover", protect, getMatchesController);
+
 
 export default router;

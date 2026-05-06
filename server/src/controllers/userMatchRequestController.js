@@ -4,15 +4,15 @@ import {
   getReceivedMatchRequests,
   updateMatchRequestStatus,
   checkExistingRequest,
+  getDiscoveryMatches,
 } from "../models/userMatchRequestModel.js";
-
+import {asyncHandler} from "../middleware/asyncHandlerMiddleware.js"
 import {
   createMatchRequestSchema,
   updateMatchRequestSchema,
 } from "../validation/userMatchRequestValidation.js";
-
 // CREATE REQUEST
-export const sendMatchRequest = async (req, res) => {
+export const sendMatchRequest = asyncHandler( async (req, res) => {
   try {
     const sender_id = req.user.userid;
 
@@ -28,7 +28,6 @@ export const sendMatchRequest = async (req, res) => {
         message: "You cannot send request to yourself",
       });
     }
-
     // check duplicate
     const existing = await checkExistingRequest(sender_id, receiver_id);
     if (existing) {
@@ -36,56 +35,51 @@ export const sendMatchRequest = async (req, res) => {
         message: "Request already sent",
       });
     }
-
     const request = await createMatchRequest(
       sender_id,
       receiver_id,
       message
     );
-
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: request,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
-};
-
+});
 // GET SENT
-export const getMySentMatchRequests = async (req, res) => {
+export const getMySentMatchRequests = asyncHandler( async (req, res) => {
   try {
     const userid = req.user.userid;
 
     const data = await getSentMatchRequests(userid);
 
-    res.json({
+    return res.json({
       success: true,
       data,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
-};
-
+});
 // GET RECEIVED
-export const getMyReceivedMatchRequests = async (req, res) => {
+export const getMyReceivedMatchRequests = asyncHandler(async (req, res) => {
   try {
     const userid = req.user.userid;
 
     const data = await getReceivedMatchRequests(userid);
 
-    res.json({
+    return res.json({
       success: true,
       data,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
-};
-
+});
 // UPDATE STATUS
-export const changeMatchRequestStatus = async (req, res) => {
+export const changeMatchRequestStatus = asyncHandler(async (req, res) => {
   try {
     const { request_id } = req.params;
 
@@ -95,20 +89,36 @@ export const changeMatchRequestStatus = async (req, res) => {
     }
 
     const { status } = req.body;
-
     const updated = await updateMatchRequestStatus(request_id, status);
-
     if (!updated) {
       return res.status(404).json({
         message: "Request not found",
       });
     }
-
-    res.json({
+    return res.json({
       success: true,
       data: updated,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
-};
+});
+
+export const getMatchesController = asyncHandler(async (req, res) => {
+  const userId = req.user.userid;
+
+  try {
+    const matches = await getDiscoveryMatches(userId);
+    
+    return res.status(200).json({
+      success: true,
+      data: matches,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error calculating matches",
+      error: error.message
+    });
+  }
+});

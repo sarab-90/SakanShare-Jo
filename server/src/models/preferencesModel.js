@@ -1,6 +1,5 @@
-import {pool} from "../config/db.js";
+import { pool } from "../config/db.js";
 
-// CREATE
 export const createPreferences = async (
   userid,
   gender,
@@ -13,12 +12,15 @@ export const createPreferences = async (
   pets_allowed,
   guest_policy,
   additional_notes,
-  budget
+  budget,
+  city,
+  preferred_room_type,
+  furnished
 ) => {
   const result = await pool.query(
     `INSERT INTO preferences 
-    (userid, gender, min_age, max_age, smoking, sleep_time, cleanliness, noise_tolerance, pets_allowed, guest_policy, additional_notes, budget)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+    (userid, gender, min_age, max_age, smoking, sleep_time, cleanliness, noise_tolerance, pets_allowed, guest_policy, additional_notes, budget, city, preferred_room_type, furnished)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
     RETURNING *`,
     [
       userid,
@@ -33,13 +35,14 @@ export const createPreferences = async (
       guest_policy,
       additional_notes,
       budget,
+      city,
+      preferred_room_type,
+      furnished,
     ]
   );
-
   return result.rows[0];
 };
 
-// GET BY USER
 export const getPreferencesByUserId = async (userid) => {
   const result = await pool.query(
     `SELECT * FROM preferences WHERE userid = $1`,
@@ -48,7 +51,6 @@ export const getPreferencesByUserId = async (userid) => {
   return result.rows[0];
 };
 
-// UPDATE
 export const updatePreferences = async (userid, updates) => {
   const {
     gender,
@@ -62,6 +64,9 @@ export const updatePreferences = async (userid, updates) => {
     guest_policy,
     additional_notes,
     budget,
+    city,
+    preferred_room_type,
+    furnished,
   } = updates;
 
   const result = await pool.query(
@@ -76,8 +81,11 @@ export const updatePreferences = async (userid, updates) => {
       pets_allowed = COALESCE($8, pets_allowed),
       guest_policy = COALESCE($9, guest_policy),
       additional_notes = COALESCE($10, additional_notes),
-      budget = COALESCE($11, budget)
-    WHERE userid = $12
+      budget = COALESCE($11, budget),
+      city = COALESCE($12, city),
+      preferred_room_type = COALESCE($13, preferred_room_type),
+      furnished = COALESCE($14, furnished)
+    WHERE userid = $15
     RETURNING *`,
     [
       gender,
@@ -91,41 +99,11 @@ export const updatePreferences = async (userid, updates) => {
       guest_policy,
       additional_notes,
       budget,
+      city,
+      preferred_room_type,
+      furnished,
       userid,
     ]
   );
-
   return result.rows[0];
-};
-
-/* ================= ADMIN STATS ================= */
-
-export const getTotalPreferences = async () => {
-  const result = await pool.query(`SELECT COUNT(*) FROM preferences`);
-  return result.rows[0].count;
-};
-
-export const getSmokingStats = async () => {
-  const result = await pool.query(`
-    SELECT smoking, COUNT(*) 
-    FROM preferences 
-    GROUP BY smoking
-  `);
-  return result.rows;
-};
-
-export const getAvgBudget = async () => {
-  const result = await pool.query(`
-    SELECT AVG(budget) FROM preferences
-  `);
-  return result.rows[0].avg;
-};
-
-export const getGenderStats = async () => {
-  const result = await pool.query(`
-    SELECT gender, COUNT(*) 
-    FROM preferences 
-    GROUP BY gender
-  `);
-  return result.rows;
 };

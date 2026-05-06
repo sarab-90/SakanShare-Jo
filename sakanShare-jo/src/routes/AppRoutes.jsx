@@ -15,7 +15,7 @@ import CreateListing from "../pages/listings/CreateListing";
 
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import LandlordDashboard from "../pages/landlord/LandlordDashboard.jsx";
-import UserHome from "../pages/user/UserHome.jsx"
+import UserHome from "../pages/user/UserHome.jsx";
 
 {
   /* AUTH */
@@ -27,8 +27,11 @@ import UsersManagement from "../pages/admin/UsersManagement.jsx";
 import RequestsManagement from "../pages/admin/RequestsManagement.jsx";
 import OnboardingWizard from "../pages/onboarding/OnboardingWizard.jsx";
 import Matches from "../pages/user/Matches.jsx";
-
-
+import MyRequests from "../pages/user/MyRequests.jsx";
+import OnboardingGuard from "../components/auth/OnboardingGuard.jsx";
+import UserPreferences from "../pages/user/UserPreferences.jsx";
+import Analytics from "../pages/admin/Analytics.jsx";
+import Profile from "../pages/admin/Profile.jsx";
 
 export default function AppRoutes() {
   return (
@@ -54,11 +57,13 @@ export default function AppRoutes() {
         }
       >
         <Route path="/user/home" element={<UserHome />} />
-        <Route path="/onboarding" element={<OnboardingWizard />} />
-        {/* <Route path="/user/preferences" element={<UserPreferences />} /> */}
+        <Route path="/user/preferences" element={<UserPreferences />} />
         <Route path="/user/matches" element={<Matches />} />
+        <Route path="/user/requests" element={<MyRequests />} />
         {/* <Route path="/user/profile" element={<Profile />} /> */}
+        <Route path="/onboarding"element={ <OnboardingWizard /> }/>
       </Route>
+      
 
       {/* LANDLORD */}
       <Route
@@ -85,6 +90,8 @@ export default function AppRoutes() {
         <Route path="/admin/users" element={<UsersManagement />} />
         <Route path="/admin/listings" element={<ListingsManagement />} />
         <Route path="/admin/requests" element={<RequestsManagement />} />
+        <Route path="/admin/analytics" element={<Analytics />} />
+        <Route path="/admin/profile" element={<Profile />} />
       </Route>
     </Routes>
   );

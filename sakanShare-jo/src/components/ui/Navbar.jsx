@@ -9,297 +9,203 @@ import {
   IconButton,
   Drawer,
   Stack,
-} from "@mui/material";
-
-import {
+  Avatar,
   Menu,
-  Home,
-  Apartment,
-  Groups,
-  Dashboard,
-} from "@mui/icons-material";
-
-import { Link } from "react-router-dom";
+  MenuItem,
+  Divider,
+} from "@mui/material";
+import { Menu as MenuIcon, Logout, AccountCircle, ExpandMore, Window } from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/AuthContext.jsx";
 
 export default function Navbar() {
   const { user, logout } = useContext(UserContext);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
+    navigate("/");
+  };
 
   const navLinks = [
-    { title: "Home", path: "/", icon: <Home fontSize="small" /> },
-    { title: "Spaces", path: "/spaces", icon: <Apartment fontSize="small" /> },
-    {
-      title: "Roommates",
-      path: "/roommates",
-      icon: <Groups fontSize="small" />,
-    },
+    { title: "Home", path: "/" },
+    { title: "About us", path: "/about/us" },
   ];
 
   return (
     <>
-      {/* MAIN NAVBAR */}
       <AppBar
         position="sticky"
         elevation={0}
         sx={{
           backdropFilter: "blur(14px)",
-          background: "rgba(255,255,255,0.75)",
-          borderBottom: "1px solid rgba(226,232,240,0.7)",
+          background: "rgba(255,255,255,0.8)",
+          borderBottom: "1px solid #E2E8F0",
           color: "#1B262C",
         }}
       >
         <Container maxWidth="xl">
           <Toolbar sx={{ justifyContent: "space-between" }}>
-            {/* LOGO */}
             <Typography
               variant="h5"
-              fontWeight="800"
+              fontWeight="900"
               component={Link}
               to="/"
-              sx={{
-                textDecoration: "none",
-                color: "#1B262C",
-                letterSpacing: "-1px",
-              }}
+              sx={{ textDecoration: "none", color: "#1B262C", letterSpacing: "-1px" }}
             >
-              SakanShare
+              Sakan<span style={{ color: "#6366F1" }}>Share</span>
             </Typography>
-              <Link to="/listings">Listing page</Link>
 
-
-              <Link to="/create-listing">Create Listings</Link>
-            
-              <Link to="/ListingCard">Listing Card</Link>
-
-            {/* DESKTOP LINKS */}
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{
-                display: { xs: "none", md: "flex" },
-              }}
-            >
+            <Stack direction="row" spacing={1} sx={{ display: { xs: "none", md: "flex" } }}>
               {navLinks.map((link) => (
                 <Button
                   key={link.title}
                   component={Link}
                   to={link.path}
-                  startIcon={link.icon}
-                  sx={{
-                    color: "#475569",
-                    fontWeight: 600,
-                    borderRadius: 3,
-                    px: 2,
-                    py: 1,
-                    textTransform: "none",
-
-                    "&:hover": {
-                      backgroundColor: "#EEF2FF",
-                      color: "#6366F1",
-                    },
-                  }}
+                  sx={{ color: "#475569", fontWeight: 700, borderRadius: 2, textTransform: "none" }}
                 >
                   {link.title}
                 </Button>
               ))}
+
+              {/* BROWSE SPACES: تظهر فقط للمستخدم المسجل وتوجهه إلى منطقته الخاصة */}
+              {user?.role === "user" && (
+                <Button
+                  component={Link}
+                  to="/user/home"
+                  sx={{ 
+                    color: "#6366F1", 
+                    fontWeight: 800, 
+                    textTransform: "none",
+                    bgcolor: "rgba(99,102,241,0.08)",
+                    px: 2,
+                    ml: 2,
+                    "&:hover": { bgcolor: "rgba(99,102,241,0.15)" }
+                  }}
+                >
+                  BROWSE SPACES
+                </Button>
+              )}
             </Stack>
 
-            {/* RIGHT SIDE */}
-            <Stack direction="row" spacing={2}>
-              {/* DESKTOP AUTH */}
+            <Box>
               {!user ? (
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ display: { xs: "none", md: "flex" } }}
-                >
-                  <Button
-                    component={Link}
-                    to="/login"
-                    sx={{
-                      color: "#1B262C",
-                      fontWeight: 600,
-                      textTransform: "none",
-                    }}
-                  >
+                <Stack direction="row" spacing={2} sx={{ display: { xs: "none", md: "flex" } }}>
+                  <Button component={Link} to="/login" sx={{ color: "#1B262C", fontWeight: 600, textTransform: "none" }}>
                     Login
                   </Button>
-
                   <Button
                     component={Link}
                     to="/register"
                     variant="contained"
-                    sx={{
-                      bgcolor: "#6366F1",
-                      borderRadius: 3,
-                      px: 3,
-                      textTransform: "none",
-                      fontWeight: "bold",
-
-                      "&:hover": {
-                        bgcolor: "#4F46E5",
-                      },
-                    }}
+                    sx={{ bgcolor: "#6366F1", borderRadius: 2, textTransform: "none", fontWeight: "bold" }}
                   >
-                    Get Started
+                    Sign up
                   </Button>
                 </Stack>
               ) : (
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ display: { xs: "none", md: "flex" } }}
-                >
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  {/* أزرار لوحة التحكم للأدوار   */}
+                  {user.role === "admin" && (
+                    <Button
+                      component={Link}
+                      to="/admin"
+                      variant="outlined"
+                      sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700, display: { xs: "none", sm: "flex" } }}
+                    >
+                      Admin Panel
+                    </Button>
+                  )}
+                  {user.role === "landlord" && (
+                    <Button
+                      component={Link}
+                      to="/landlord/listings"
+                      variant="outlined"
+                      sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700, display: { xs: "none", sm: "flex" } }}
+                    >
+                      My Dashboard
+                    </Button>
+                  )}
                   <Button
-                    component={Link}
-                    to={
-                      user.role === "admin"
-                        ? "/admin/dashboard"
-                        : user.role === "landlord"
-                        ? "/landlord/dashboard"
-                        : "/user/home"
-                    }
-                    startIcon={<Dashboard />}
-                    sx={{
-                      color: "#1B262C",
-                      fontWeight: 600,
-                      textTransform: "none",
-                    }}
+                    onClick={handleMenuOpen}
+                    sx={{ textTransform: "none", color: "#1B262C", borderRadius: 2 }}
                   >
-                    Dashboard
+                    <Avatar sx={{ width: 32, height: 32, bgcolor: "#6366F1", mr: 1, fontSize: 14 }}>
+                      {user.name?.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Typography variant="body2" fontWeight={700} sx={{ display: { xs: "none", sm: "block" } }}>
+                      {user.name}
+                    </Typography>
                   </Button>
 
-                  <Button
-                    onClick={logout}
-                    sx={{
-                      color: "#EF4444",
-                      fontWeight: 600,
-                      textTransform: "none",
-                    }}
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    PaperProps={{ sx: { mt: 3, Width: 100, borderRadius: 8 } }}
                   >
-                    Logout
-                  </Button>
+                    <MenuItem onClick={() => { navigate("/profile"); handleMenuClose(); }}>
+                       Profile
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleLogout} sx={{ color: "#EF4444" }}>
+                      Logout
+                    </MenuItem>
+                  </Menu>
                 </Stack>
               )}
 
-              {/* MOBILE MENU */}
-              <IconButton
-                onClick={() => setOpen(true)}
-                sx={{
-                  display: { xs: "flex", md: "none" },
-                  color: "#1B262C",
-                }}
-              >
-                <Menu />
+              <IconButton onClick={() => setMobileOpen(true)} sx={{ display: { xs: "flex", md: "none" }, color: "#1B262C" }}>
+                <MenuIcon />
               </IconButton>
-            </Stack>
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
 
       {/* MOBILE DRAWER */}
-      <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-        <Box
-          sx={{
-            width: 260,
-            height: "100%",
-            background:
-              "linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 100%)",
-            p: 3,
-          }}
-        >
-          <Typography variant="h5" fontWeight="800" mb={4}>
-            SakanShare
-          </Typography>
-
-          <Stack spacing={2}>
+      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        <Box sx={{ width: 280, p: 3 }}>
+          <Typography variant="h6" fontWeight="900" mb={3}>SakanShare</Typography>
+          <Stack spacing={1}>
             {navLinks.map((link) => (
-              <Button
-                key={link.title}
-                component={Link}
-                to={link.path}
-                startIcon={link.icon}
-                onClick={() => setOpen(false)}
-                sx={{
-                  justifyContent: "flex-start",
-                  color: "#1B262C",
-                  py: 1.5,
-                  borderRadius: 3,
-                  textTransform: "none",
-                  fontWeight: 600,
-
-                  "&:hover": {
-                    backgroundColor: "#E0E7FF",
-                  },
-                }}
-              >
+              <Button key={link.title} component={Link} to={link.path} fullWidth sx={{ justifyContent: "flex-start", textTransform: "none" }}>
                 {link.title}
               </Button>
             ))}
+            
+            {user?.role === "user" && (
+              <Button 
+                component={Link} 
+                to="/user/home" 
+                fullWidth 
+                sx={{ justifyContent: "flex-start", color: "#6366F1", fontWeight: 800, bgcolor: "#F5F3FF", mt: 1 }}
+              >
+                BROWSE SPACES
+              </Button>
+            )}
 
-            <Box sx={{ pt: 2 }}>
-              {!user ? (
-                <Stack spacing={2}>
-                  <Button
-                    component={Link}
-                    to="/login"
-                    variant="outlined"
-                    onClick={() => setOpen(false)}
-                    sx={{
-                      borderRadius: 3,
-                      textTransform: "none",
-                    }}
-                  >
-                    Login
-                  </Button>
-
-                  <Button
-                    component={Link}
-                    to="/register"
-                    variant="contained"
-                    onClick={() => setOpen(false)}
-                    sx={{
-                      bgcolor: "#6366F1",
-                      borderRadius: 3,
-                      textTransform: "none",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Get Started
-                  </Button>
-                </Stack>
-              ) : (
-                <Stack spacing={2}>
-                  <Button
-                    component={Link}
-                    to="/user/home"
-                    variant="contained"
-                    onClick={() => setOpen(false)}
-                    sx={{
-                      bgcolor: "#6366F1",
-                      borderRadius: 3,
-                      textTransform: "none",
-                    }}
-                  >
-                    Dashboard
-                  </Button>
-
-                  <Button
-                    onClick={logout}
-                    sx={{
-                      color: "#EF4444",
-                      fontWeight: 600,
-                      textTransform: "none",
-                    }}
-                  >
-                    Logout
-                  </Button>
-                </Stack>
-              )}
-            </Box>
+            <Divider sx={{ my: 2 }} />
+            
+            {!user ? (
+              <Stack spacing={1}>
+                <Button component={Link} to="/login" variant="outlined">Login</Button>
+                <Button component={Link} to="/register" variant="contained" sx={{ bgcolor: "#6366F1" }}>Sign up</Button>
+              </Stack>
+            ) : (
+              <>
+                <Button component={Link} to="/profile" fullWidth sx={{ justifyContent: "flex-start", textTransform: "none" }}>Profile</Button>
+                <Button onClick={handleLogout} color="error" fullWidth sx={{ justifyContent: "flex-start", textTransform: "none" }}>Logout</Button>
+              </>
+            )}
           </Stack>
         </Box>
       </Drawer>

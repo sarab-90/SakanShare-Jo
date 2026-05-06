@@ -14,29 +14,12 @@ import { preferencesSchema } from "../validation/preferencesValidation.js";
 
 const router = express.Router();
 
-/* USER */
-router.post(
-  "/preferences",
-  protect,
-  validate(preferencesSchema),
-  createUserPreferences,
-);
+router.post("/preferences", protect, validate(preferencesSchema), createUserPreferences,);
 
 router.get("/preferences", protect, getUserPreferences);
 
-router.put(
-  "/preferences",
-  protect,
-  validate(preferencesSchema),
-  updateUserPreferences,
-);
+router.put( "/preferences", protect, validate(preferencesSchema), updateUserPreferences,);
 
-/* ADMIN */
-router.get(
-  "/admin/preferences/stats",
-  protect,
-  authorizeRoles("admin"),
-  getPreferencesStats,
-);
+router.get( "/admin/preferences/stats", protect, authorizeRoles("admin"), getPreferencesStats,);
 
 export default router;

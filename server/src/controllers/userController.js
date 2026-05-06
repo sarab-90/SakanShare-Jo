@@ -5,6 +5,7 @@ import {
   updateUser,
   deleteUser,
   deactivateUser,
+  completeUserOnboarding,
 } from "../models/userModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 // get all users
@@ -131,5 +132,23 @@ export const deactivateUserController = asyncHandler(async (req, res) => {
     message: "User deactivated successfully",
     user,
   });
+});
+
+// COMPLETE ONBOARDING
+export const completeOnboarding = asyncHandler(async (req, res) => {
+    const id = req.user.userid;
+    try {
+    const user = await completeUserOnboarding(id);
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+     return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
 

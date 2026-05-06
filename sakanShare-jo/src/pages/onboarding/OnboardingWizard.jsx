@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Box,
   Button,
@@ -11,10 +11,18 @@ import {
   MenuItem,
 } from "@mui/material";
 
+import api from "../../services/api.js";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/AuthContext.jsx";
+
 const steps = ["Account Type", "Basic Info", "Preferences"];
 
 export default function OnboardingWizard() {
   const [activeStep, setActiveStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { setUser, user } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     role: "",
@@ -22,7 +30,7 @@ export default function OnboardingWizard() {
     phone: "",
     city: "",
     budget: "",
-    genderPreference: "",
+    gender: "", // ✅ تم التعديل من genderPreference
   });
 
   const handleChange = (e) => {
@@ -41,6 +49,33 @@ export default function OnboardingWizard() {
   const handleBack = () => {
     if (activeStep > 0) {
       setActiveStep((prev) => prev - 1);
+    }
+  };
+
+  // 🔥 FINISH ONBOARDING
+  const handleFinish = async () => {
+    try {
+      setLoading(true);
+
+      // ✅ 1. حفظ preferences بشكل صحيح
+      await api.post("/preferences", {
+        budget: formData.budget,
+        city: formData.city,
+        gender: formData.gender,
+      });
+
+      // ✅ 2. تحديث onboarding
+      const res = await api.patch("/users/onboarding/complete");
+
+      // ✅ 3. تحديث user context
+      setUser(res.data.data);
+
+      // ✅ 4. redirect
+      navigate("/user/home");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,13 +133,13 @@ export default function OnboardingWizard() {
             <TextField
               select
               label="Roommate Preference"
-              name="genderPreference"
-              value={formData.genderPreference}
+              name="gender" // ✅ تم التعديل
+              value={formData.gender}
               onChange={handleChange}
             >
               <MenuItem value="male">Male</MenuItem>
               <MenuItem value="female">Female</MenuItem>
-              <MenuItem value="mixed">Mixed</MenuItem>
+              <MenuItem value="any">Any</MenuItem> {/* ✅ مهم */}
             </TextField>
           </Box>
         );
@@ -140,16 +175,18 @@ export default function OnboardingWizard() {
       </Paper>
 
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Button
-          disabled={activeStep === 0}
-          onClick={handleBack}
-        >
+        <Button disabled={activeStep === 0} onClick={handleBack}>
           Back
         </Button>
 
         {activeStep === steps.length - 1 ? (
-          <Button variant="contained" color="success">
-            Finish
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleFinish}
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Finish"}
           </Button>
         ) : (
           <Button variant="contained" onClick={handleNext}>

@@ -39,3 +39,14 @@ export const deactivateUser = async (id) => {
     );
     return result.rows[0];
 };
+export const completeUserOnboarding = async (id) => {
+  const result = await pool.query(
+    `UPDATE users 
+     SET onboarding_completed = true 
+     WHERE userid = $1 
+     RETURNING *`,
+    [id]
+  );
+
+  return result.rows[0];
+};

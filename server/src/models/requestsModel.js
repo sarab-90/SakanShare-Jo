@@ -10,7 +10,7 @@ export const createRoommateRequest = async (sender_id, listing_id, message) => {
   const result = await pool.query(query, [sender_id, listing_id, message]);
   return result.rows[0];
 };
-// get Request id
+// get Request
 export const getRequestById = async (request_id) => {
   const query = `
         SELECT *
@@ -81,7 +81,7 @@ export const getMyRequests = async (sender_id) => {
     const result = await pool.query(query, [sender_id]);
     return result.rows;
 };
-// GET ALL REQUESTS (ADMIN)
+// GET ALL REQUESTS
 export const getAllRequests = async () => {
   const query = `
     SELECT 
@@ -97,9 +97,7 @@ export const getAllRequests = async () => {
       ON rr.listing_id = sh.listing_id
     ORDER BY rr.created_at DESC
   `;
-
   const result = await pool.query(query);
-
   return result.rows;
 };
 // Request As Viewed

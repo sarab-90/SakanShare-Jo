@@ -4,7 +4,7 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET;
 export const generateTokens = (user) => {
     const accessToken = jwt.sign(
         {
-            id: user.userid,
+            userid: user.userid,
             role: user.role,
         },
         ACCESS_SECRET,

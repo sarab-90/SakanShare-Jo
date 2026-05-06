@@ -1,182 +1,188 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Chip,
-  Button,
-  LinearProgress,
+  Box, Typography, Grid, Paper, Avatar, Button, Chip, 
+  LinearProgress, Stack, Skeleton, Fade, Divider
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { UserContext } from "../../context/AuthContext.jsx";
+import { 
+  VerifiedUserRounded, 
+  LocationOnRounded, 
+  PaymentsRounded, 
+  AutoAwesomeRounded,
+  SendRounded
+} from "@mui/icons-material";
 import api from "../../services/api.js";
+import { UserContext } from "../../context/AuthContext.jsx";
 import toast from "react-hot-toast";
-
-const mockUsers = [
-  { id: 1, name: "Ahmad", city: "Amman", budget: 250, role: "tenant" },
-  { id: 2, name: "Sara", city: "Amman", budget: 300, role: "tenant" },
-  { id: 3, name: "Omar", city: "Irbid", budget: 200, role: "tenant" },
-  { id: 4, name: "Lina", city: "Amman", budget: 220, role: "tenant" },
-];
 
 const Matches = () => {
   const { user } = useContext(UserContext);
-  const theme = useTheme();
-
   const [matches, setMatches] = useState([]);
-  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // 🔥 ADDED: loading state
-  const [loadingId, setLoadingId] = useState(null);
-
-  const calculateScore = (u, me) => {
-    let score = 0;
-
-    if (u.city === me.city) score += 40;
-
-    const budgetDiff = Math.abs(u.budget - me.budget);
-    if (budgetDiff <= 50) score += 30;
-    else if (budgetDiff <= 100) score += 15;
-
-    if (u.role === me.role) score += 30;
-
-    return score;
-  };
-
+  // جلب المستخدمين المتطابقين بناءً على الخوارزمية
   useEffect(() => {
-    if (!user) return;
+    const fetchMatches = async () => {
+      try {
+        setLoading(true);
+        // هذا المسار يجب أن يعيد قائمة المستخدمين مع حقل match_score
+        const res = await api.get("/match-requests/discover"); 
+        setMatches(res.data.data || []);
+      } catch (err) {
+        console.error("Match Fetch Error:", err);
+        toast.error("Could not load matches");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const enriched = mockUsers
-      .filter((u) => u.id !== user.id)
-      .map((u) => ({
-        ...u,
-        score: calculateScore(u, user),
-      }))
-      .sort((a, b) => b.score - a.score);
-
-    setMatches(enriched);
+    if (user) fetchMatches();
   }, [user]);
 
-  const sendRequest = async (id) => {
+  const handleSendRequest = async (targetUserId) => {
     try {
-      setLoadingId(id);
-
-      await api.post("/match-requests", {
-        receiver_id: id,
-        message: "",
+      await api.post("/match-requests", { 
+        receiver_id: targetUserId,
+        message: `Hi! Based on our profile compatibility, I'd like to connect.`
       });
-
-      setRequests((prev) => [...prev, id]);
-
-      toast.success("Request sent successfully");
+      toast.success("Connection request sent!");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Error sending request");
-    } finally {
-      setLoadingId(null);
+      toast.error(err.response?.data?.message || "Failed to send request");
     }
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Skeleton variant="text" width="30%" height={60} sx={{ mb: 2 }} />
+        <Grid container spacing={3}>
+          {[1, 2, 3].map((i) => (
+            <Grid item xs={12} md={6} key={i}><Skeleton variant="rectangular" height={200} sx={{ borderRadius: 4 }} /></Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ maxWidth: 1100, mx: "auto", mt: 5, px: 2 }}>
-
-      {/* HEADER */}
-      <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h4"
-          fontWeight={900}
-          sx={{
-            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.success.main})`,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Your Matches
+    <Box sx={{ maxWidth: 1200, mx: "auto", py: 6, px: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 5, textAlign: 'center' }}>
+        <Typography variant="h3" fontWeight={900} gutterBottom sx={{ color: '#1A2027' }}>
+          Smart <span style={{ color: '#3f51b5' }}>Matches</span>
         </Typography>
-
-        <Typography color="text.secondary" sx={{ mt: 1 }}>
-          People most compatible with your profile
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+          We've analyzed preferences to find the most compatible roommates for your lifestyle.
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
-        {matches.map((u) => (
-          <Grid item xs={12} md={4} key={u.id}>
-            <Paper
-              elevation={4}
-              sx={{
-                p: 3,
-                borderRadius: 4,
-                background: theme.palette.background.paper,
-                transition: "0.3s",
-                "&:hover": {
-                  transform: "translateY(-5px)",
-                  boxShadow: theme.shadows[6],
-                },
-              }}
-            >
-              {/* NAME */}
-              <Typography fontWeight={800} fontSize={18}>
-                {u.name}
-              </Typography>
-
-              {/* CHIPS */}
-              <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
-                <Chip label={u.city} size="small" color="primary" variant="outlined" />
-                <Chip label={`$${u.budget}`} size="small" color="success" variant="outlined" />
-                <Chip label={u.role} size="small" color="secondary" variant="outlined" />
-              </Box>
-
-              {/* SCORE */}
-              <Box sx={{ mt: 2 }}>
-                <Typography fontSize={13} fontWeight={600}>
-                  Match Score: {u.score}%
-                </Typography>
-
-                <LinearProgress
-                  variant="determinate"
-                  value={u.score}
-                  sx={{
-                    mt: 1,
-                    height: 8,
-                    borderRadius: 5,
-                    backgroundColor: theme.palette.grey[300],
-                    "& .MuiLinearProgress-bar": {
-                      background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.success.main})`,
-                    },
-                  }}
-                />
-              </Box>
-
-              {/* BUTTON */}
-              <Button
-                fullWidth
+      <Grid container spacing={4}>
+        {matches.map((match) => (
+          <Grid item xs={12} md={6} key={match.userid}>
+            <Fade in={true} timeout={500}>
+              <Paper
+                elevation={0}
                 sx={{
-                  mt: 3,
-                  borderRadius: 3,
-                  fontWeight: 700,
-                  textTransform: "none",
-                  background: requests.includes(u.id)
-                    ? theme.palette.grey[300]
-                    : `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.success.main})`,
-                  color: requests.includes(u.id)
-                    ? theme.palette.text.secondary
-                    : "#fff",
+                  p: 3,
+                  borderRadius: 5,
+                  border: '1px solid #E0E4EC',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                  }
                 }}
-                onClick={() => sendRequest(u.id)}
-                disabled={requests.includes(u.id) || loadingId === u.id}
               >
-                {loadingId === u.id
-                  ? "Sending..."
-                  : requests.includes(u.id)
-                  ? "Request Sent"
-                  : "Send Request"}
-              </Button>
+                {/* Match Score Badge */}
+                <Box sx={{ position: 'absolute', top: 20, right: 20, textAlign: 'right' }}>
+                  <Typography variant="h4" fontWeight={900} color="primary.main">
+                    {match.match_score}%
+                  </Typography>
+                  <Typography variant="caption" fontWeight={700} color="text.secondary">
+                    COMPATIBILITY
+                  </Typography>
+                </Box>
 
-            </Paper>
+                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                  <Avatar 
+                    sx={{ width: 70, height: 70, bgcolor: 'primary.main', fontSize: '1.5rem', fontWeight: 800 }}
+                  >
+                    {match.name[0]}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6" fontWeight={800}>
+                      {match.name} {match.match_score > 85 && <VerifiedUserRounded color="primary" sx={{ fontSize: 18, ml: 0.5 }} />}
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <LocationOnRounded sx={{ fontSize: 16, color: 'text.secondary' }} />
+                      <Typography variant="body2" color="text.secondary">{match.city || "Amman"}</Typography>
+                    </Stack>
+                  </Box>
+                </Stack>
+
+                <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
+
+                {/* Compatibility Details */}
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={6}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <PaymentsRounded color="action" />
+                      <Typography variant="body2">Budget: <b>{match.budget} JOD</b></Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Chip 
+                      icon={<AutoAwesomeRounded />} 
+                      label={match.smoking ? "Smoker" : "Non-Smoker"} 
+                      size="small" 
+                      variant="outlined"
+                      color={match.smoking ? "default" : "success"}
+                    />
+                  </Grid>
+                </Grid>
+
+                {/* Progress Bar */}
+                <Box sx={{ mb: 3 }}>
+                  <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                    <Typography variant="caption" fontWeight={700}>Match Quality</Typography>
+                    <Typography variant="caption" fontWeight={700}>{match.match_score}%</Typography>
+                  </Stack>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={match.match_score} 
+                    sx={{ height: 10, borderRadius: 5, bgcolor: '#F0F2F5' }}
+                  />
+                </Box>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<SendRounded />}
+                  onClick={() => handleSendRequest(match.userid)}
+                  sx={{ 
+                    borderRadius: 3, 
+                    py: 1.5, 
+                    fontWeight: 800,
+                    textTransform: 'none',
+                    boxShadow: 'none'
+                  }}
+                >
+                  Connect Now
+                </Button>
+              </Paper>
+            </Fade>
           </Grid>
         ))}
       </Grid>
+
+      {matches.length === 0 && !loading && (
+        <Box sx={{ textAlign: 'center', py: 10 }}>
+          <Typography variant="h6" color="text.secondary">
+            No perfect matches found yet. Try updating your preferences!
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

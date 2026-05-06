@@ -30,7 +30,7 @@ export const createNewListing = asyncHandler(async (req, res) => {
     longitude,
     is_available,
   } = req.validateData;
-  const owner_id = req.user.id;
+  const owner_id = req.user.userid;
   console.log("owner_id:", owner_id);
   
   try {
@@ -151,7 +151,7 @@ export const updateListingController = asyncHandler(async (req, res) => {
 // Delete listing by ID
 export const deleteListingController = asyncHandler(async (req, res) => {
   const listingId = req.params.id;
-  const owner_id = req.user.userid;
+   const owner_id = req.user.userid;
   try {
     if (!listingId) {
       return res.status(400).json({ message: "Listing ID is required"});

@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 export const protect = (req, res, next) => {
   let token = req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
-  console.log("token: ", token);
   if (!token) {
     return res.status(401).json({
       success: false,
@@ -11,7 +10,10 @@ export const protect = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
     
-    req.user = decoded;
+    req.user = {
+  userid: decoded.userid,
+  role: decoded.role,
+};
     console.log("Decoded User: ", req.user);
     next();
   } catch (error) {

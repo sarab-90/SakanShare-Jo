@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-
 import {
   Box,
   Container,
@@ -9,56 +8,58 @@ import {
   TextField,
   Button,
   Stack,
+  Avatar,
+  IconButton,
+  Badge,
 } from "@mui/material";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+} from "recharts";
 
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+// Lucide Icons - Stable and Modern
+import {
+  Trash2,
+  Search,
+  TrendingUp,
+  Users,
+  Home,
+  Settings,
+  LayoutDashboard,
+  DollarSign,
+  Download,
+} from "lucide-react";
 
 import { UserContext } from "../../context/AuthContext.jsx";
 import { ListingContext } from "../../context/ListingContext.jsx";
 import { PreferencesContext } from "../../context/PreferencesContext.jsx";
 
-const COLORS = ["#6366F1", "#10B981", "#F59E0B"];
+const COLORS = ["#6366F1", "#10B981", "#F59E0B", "#EC4899"];
 
 const AdminDashboard = () => {
-  const { users, allUsers, deleteUser } = useContext(UserContext);
-  const context = useContext(ListingContext);
-
+  const { users = [], allUsers, deleteUser } = useContext(UserContext);
   const { listings = [], getListings } = useContext(ListingContext);
-
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-
   const { preferencesStats, getPreferencesStats } =
     useContext(PreferencesContext);
 
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const perPage = 5;
 
   useEffect(() => {
-    allUsers();
-    getListings();
-    getPreferencesStats();
+    allUsers?.();
+    getListings?.();
+    getPreferencesStats?.();
   }, []);
 
-  // SAFE DATA (IMPORTANT)
   const safeUsers = Array.isArray(users) ? users : [];
   const safeListings = Array.isArray(listings) ? listings : [];
 
-  // FILTER USERS
-  const filteredUsers = safeUsers.filter((u) =>
-    u?.name?.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  const paginatedUsers = filteredUsers.slice(
-    (page - 1) * perPage,
-    page * perPage,
-  );
-
-  // ROLE STATS
   const roleData = [
-    {
-      name: "Users",
-      value: safeUsers.filter((u) => u.role === "user").length,
-    },
+    { name: "Users", value: safeUsers.filter((u) => u.role === "user").length },
     {
       name: "Admins",
       value: safeUsers.filter((u) => u.role === "admin").length,
@@ -69,132 +70,295 @@ const AdminDashboard = () => {
     },
   ];
 
-  return (
-    <Box sx={{ bgcolor: "#F8FAFC", minHeight: "100vh", py: 4 }}>
-      <Container maxWidth="xl">
-        {/* HEADER */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 900 }}>
-            Admin Dashboard
-          </Typography>
+  const filteredUsers = safeUsers.filter(
+    (u) =>
+      u?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u?.email?.toLowerCase().includes(search.toLowerCase()),
+  );
 
-          <Typography sx={{ color: "#64748B" }}>
-            Real-time system overview
+  const paginatedUsers = filteredUsers.slice(
+    (page - 1) * perPage,
+    page * perPage,
+  );
+
+  const StatsCard = ({ title, value, subtitle, icon: Icon, color }) => (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        borderRadius: 4,
+        border: "1px solid #E2E8F0",
+        bgcolor: "#FFFFFF",
+      }}
+    >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flex-start"
+      >
+        <Box>
+          <Typography
+            sx={{
+              color: "#64748B",
+              fontWeight: 600,
+              fontSize: "0.875rem",
+              mb: 1,
+            }}
+          >
+            {title}
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: "#1E293B" }}>
+            {value}
           </Typography>
         </Box>
+        <Box
+          sx={{ bgcolor: `${color}15`, color: color, p: 1.5, borderRadius: 3 }}
+        >
+          <Icon size={24} />
+        </Box>
+      </Stack>
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2 }}>
+        <TrendingUp size={16} color="#10B981" />
+        <Typography sx={{ color: "#64748B", fontSize: "0.75rem" }}>
+          {subtitle}
+        </Typography>
+      </Stack>
+    </Paper>
+  );
+// Export Reports
+  const exportToCSV = () => {
+    const headers = ["User ID, Name, Email, Role, Created At\n"];
 
-        {/* STATS */}
-        <Grid container spacing={3}>
-          <Grid xs={12} md={3}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography>Users</Typography>
-              <Typography variant="h4">{safeUsers.length}</Typography>
-            </Paper>
+    const rows = safeUsers
+      .map(
+        (u) => `${u.userid}, ${u.name}, ${u.email}, ${u.role}, ${u.created_at}`,
+      )
+      .join("\n");
+
+    const blob = new Blob([headers + rows], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "sakan_share_users.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  return (
+    <Box sx={{ bgcolor: "#F8FAFC", minHeight: "100vh", py: 6 }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <Box
+          sx={{
+            mb: 6,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: 800, color: "#1E293B", letterSpacing: "-1px" }}
+            >
+              Overview Dashboard
+            </Typography>
+            <Typography sx={{ color: "#64748B", mt: 1 }}>
+              Welcome back, Sarab. Here is what's happening with Sakan Share
+              today.
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<Download size={18} />}
+            onClick={exportToCSV} 
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              py: 1.2,
+              bgcolor: "#1B262C",
+              "&:hover": { bgcolor: "#2C3E50" },
+            }}
+          >
+            Export Reports
+          </Button>
+        </Box>
+
+        {/* Stats Grid */}
+        <Grid container spacing={3} sx={{ mb: 6 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatsCard
+              title="Total Users"
+              value={safeUsers.length}
+              subtitle="Live accounts"
+              icon={Users}
+              color="#6366F1"
+            />
           </Grid>
-
-          <Grid item xs={12} md={3}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography>Listings</Typography>
-              <Typography variant="h4">{safeListings.length}</Typography>
-            </Paper>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatsCard
+              title="Active Listings"
+              value={safeListings.length}
+              subtitle="Verified properties"
+              icon={Home}
+              color="#10B981"
+            />
           </Grid>
-     
-        {/* PREFERENCES STATS */}
-        
-          <Grid item xs={12} md={3}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography>Preferences</Typography>
-              <Typography variant="h4">
-                {preferencesStats?.total || 0}
-              </Typography>
-            </Paper>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatsCard
+              title="Matches Found"
+              value={preferencesStats?.total || 0}
+              subtitle="Based on preferences"
+              icon={Settings}
+              color="#F59E0B"
+            />
           </Grid>
-
-          <Grid item xs={12} md={3}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography>Avg Budget</Typography>
-              <Typography variant="h4">
-                {Math.round(preferencesStats?.avgBudget || 0)}
-              </Typography>
-            </Paper>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatsCard
+              title="Avg. Budget"
+              value={`${Math.round(preferencesStats?.avgBudget || 0)} JOD`}
+              subtitle="Per month"
+              icon={DollarSign}
+              color="#EC4899"
+            />
           </Grid>
-           </Grid>
+        </Grid>
 
-        {/* CHART */}
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-          <Grid item xs={6} md={6}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography sx={{ fontWeight: 800, mb: 2 }}>
-                Users Roles
-              </Typography>
+        <Grid container spacing={4}>
+          {/* User Management Table */}
+          <Grid item xs={12} lg={8}>
+            <Paper
+              elevation={0}
+              sx={{ p: 4, borderRadius: 5, border: "1px solid #E2E8F0" }}
+            >
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 4 }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                  User Management
+                </Typography>
+                <TextField
+                  size="small"
+                  placeholder="Search name or email..."
+                  InputProps={{
+                    startAdornment: (
+                      <Search
+                        size={18}
+                        style={{ color: "#94A3B8", marginRight: "8px" }}
+                      />
+                    ),
+                  }}
+                  onChange={(e) => setSearch(e.target.value)}
+                  sx={{
+                    width: 300,
+                    "& .MuiOutlinedInput-root": { borderRadius: 4 },
+                  }}
+                />
+              </Stack>
 
-              <ResponsiveContainer width={400} height={350}>
-                <PieChart>
-                  <Pie
-                    data={roleData}
-                    dataKey="value"
-                    outerRadius={80}
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
-                  >
-                    {roleData.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </Paper>
-          </Grid>
-
-          {/* USERS */}
-          <Grid item xs={6} md={6} >
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography sx={{ fontWeight: 800, mb: 15 }}>
-                Users Management
-              </Typography>
-                    
-              <TextField
-                fullWidth
-                placeholder="Search users..."
-                onChange={(e) => setSearch(e.target.value)}
-              />
-
-              <Box sx={{ mt: 2 }}>
-                {paginatedUsers.map((u) => (
-                  <Box
-                    key={u.id || u._id}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      py: 1,
-                      borderBottom: "1px solid #eee",
-                    }}
-                  >
-                    <Box>
-                      <Typography>{u.name}</Typography>
-                      <Typography sx={{ fontSize: 12, color: "#64748B" }}>
-                        {u.role}
-                      </Typography>
-                    </Box>
-
-                    <Button
-                      color="error"
-                      onClick={() => deleteUser(u.id || u._id)}
+              <Box sx={{ minHeight: "400px" }}>
+                {paginatedUsers.length > 0 ? (
+                  paginatedUsers.map((u) => (
+                    <Box
+                      key={u.userid}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        py: 2.5,
+                        borderBottom: "1px solid #F1F5F9",
+                        "&:last-child": { borderBottom: 0 },
+                      }}
                     >
-                      Delete
-                    </Button>
-                  </Box>
-                ))}
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar
+                          sx={{
+                            bgcolor: "#6366F1",
+                            width: 45,
+                            height: 45,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {u.name ? u.name[0].toUpperCase() : "U"}
+                        </Avatar>
+                        <Box>
+                          <Typography
+                            sx={{
+                              fontWeight: 700,
+                              fontSize: "1rem",
+                              color: "#1E293B",
+                            }}
+                          >
+                            {u.name}
+                          </Typography>
+                          <Typography
+                            sx={{ fontSize: "0.85rem", color: "#64748B" }}
+                          >
+                            {u.email}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={4} alignItems="center">
+                        <Badge
+                          badgeContent={u.role?.toUpperCase()}
+                          color={u.role === "admin" ? "secondary" : "primary"}
+                          sx={{
+                            "& .MuiBadge-badge": {
+                              borderRadius: 2,
+                              px: 1.5,
+                              py: 1.2,
+                              fontWeight: 700,
+                              position: "static",
+                              transform: "none",
+                            },
+                          }}
+                        />
+                        <IconButton
+                          color="error"
+                          onClick={() => deleteUser(u.userid)}
+                          sx={{
+                            bgcolor: "#FEF2F2",
+                            "&:hover": { bgcolor: "#FEE2E2" },
+                          }}
+                        >
+                          <Trash2 size={20} />
+                        </IconButton>
+                      </Stack>
+                    </Box>
+                  ))
+                ) : (
+                  <Typography
+                    sx={{ textAlign: "center", py: 10, color: "#94A3B8" }}
+                  >
+                    No users found.
+                  </Typography>
+                )}
               </Box>
 
-              {/* PAGINATION */}
-              <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-                  Prev
+              {/* Pagination Placeholder */}
+              <Stack
+                direction="row"
+                justifyContent="center"
+                spacing={2}
+                sx={{ mt: 4 }}
+              >
+                <Button
+                  disabled={page === 1}
+                  variant="outlined"
+                  sx={{ borderRadius: 3 }}
+                  onClick={() => setPage(page - 1)}
+                >
+                  Previous
                 </Button>
-
                 <Button
                   disabled={page * perPage >= filteredUsers.length}
+                  variant="contained"
+                  sx={{ borderRadius: 3, bgcolor: "#1B262C" }}
                   onClick={() => setPage(page + 1)}
                 >
                   Next
@@ -202,93 +366,76 @@ const AdminDashboard = () => {
               </Stack>
             </Paper>
           </Grid>
-        </Grid>
-        {/* PREFERENCES CHARTS */}
-        <Grid container spacing={3} sx={{ mt: 1 }}>
-          {/* GENDER */}
-          <Grid item xs={6} md={6}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography sx={{ fontWeight: 800, mb: 2 }}>
-                Gender Preference
-              </Typography>
 
-              <ResponsiveContainer width={400} height={300}>
-                <PieChart>
-                  <Pie
-                    data={preferencesStats?.gender || []}
-                    dataKey="count"
-                    nameKey="gender"
-                    outerRadius={80}
+          {/* Role Distribution Chart */}
+          <Grid item xs={12} lg={4}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 4,
+                borderRadius: 5,
+                border: "1px solid #E2E8F0",
+                height: "100%",
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 800, mb: 4 }}>
+                Role Distribution
+              </Typography>
+              <Box sx={{ height: 280 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={roleData}
+                      dataKey="value"
+                      innerRadius={70}
+                      outerRadius={100}
+                      paddingAngle={8}
+                    >
+                      {roleData.map((_, i) => (
+                        <Cell
+                          key={i}
+                          fill={COLORS[i % COLORS.length]}
+                          cornerRadius={10}
+                        />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+              <Stack spacing={2} sx={{ mt: 4 }}>
+                {roleData.map((entry, index) => (
+                  <Stack
+                    key={index}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
                   >
-                    {(preferencesStats?.gender || []).map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </Paper>
-          </Grid>
-
-          {/* SMOKING */}
-          <Grid item xs={6} md={6}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography sx={{ fontWeight: 800, mb: 2 }}>
-                Smoking Preference
-              </Typography>
-
-              <ResponsiveContainer width={400} height={300}>
-                <PieChart>
-                  <Pie
-                    data={preferencesStats?.smoking || []}
-                    dataKey="count"
-                    nameKey="smoking"
-                    outerRadius={80}
-                  >
-                    {(preferencesStats?.smoking || []).map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* LISTINGS */}
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-          <Grid item xs={12}>
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography sx={{ fontWeight: 800, mb: 2 }}>
-                Listings Management
-              </Typography>
-
-              {safeListings.map((l) => (
-                <Box
-                  key={l.listing_id}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    py: 1,
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
-                  <Box>
-                    <Typography>{l.title || l.name}</Typography>
-                    <Typography sx={{ fontSize: 12, color: "#64748B" }}>
-                      {l.price}
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Box
+                        sx={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: 3,
+                          bgcolor: COLORS[index],
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          fontSize: "0.9rem",
+                          color: "#64748B",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {entry.name}
+                      </Typography>
+                    </Stack>
+                    <Typography sx={{ fontWeight: 700 }}>
+                      {entry.value}
                     </Typography>
-                  </Box>
-
-                  <Stack direction="row" spacing={1}>
-                    <Button size="small" variant="contained">
-                      Approve
-                    </Button>
-                    <Button size="small" color="error">
-                      Delete
-                    </Button>
                   </Stack>
-                </Box>
-              ))}
+                ))}
+              </Stack>
             </Paper>
           </Grid>
         </Grid>
