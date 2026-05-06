@@ -4,7 +4,6 @@ import {
   getPreferencesByUserId,
   updatePreferences,
 } from "../models/preferencesModel.js";
-
 export const createUserPreferences = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
   const data = req.validateData;
@@ -12,12 +11,14 @@ export const createUserPreferences = asyncHandler(async (req, res) => {
   const existing = await getPreferencesByUserId(userid);
 
   if (existing) {
-    return res.status(409).json({
-
-      success: false,
-      message: "Preferences already exist",
+    const updated = await updatePreferences(userid, data);
+    return res.status(200).json({
+      success: true,
+      message: "Preferences updated instead of created",
+      data: updated,
     });
   }
+
   const newPref = await createPreferences(
     userid,
     data.gender,
@@ -35,6 +36,7 @@ export const createUserPreferences = asyncHandler(async (req, res) => {
     data.preferred_room_type,
     data.furnished
   );
+
   return res.status(201).json({
     success: true,
     data: newPref,

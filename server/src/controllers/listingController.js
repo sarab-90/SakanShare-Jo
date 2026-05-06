@@ -6,6 +6,7 @@ import {
   deleteListing,
 } from "../models/listingModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
+
 // Create a new listing
 export const createNewListing = asyncHandler(async (req, res) => {
   const {
@@ -30,9 +31,9 @@ export const createNewListing = asyncHandler(async (req, res) => {
     longitude,
     is_available,
   } = req.validateData;
-  const owner_id = req.user.userid;
-  console.log("owner_id:", owner_id);
   
+  const owner_id = req.user.userid;
+
   try {
     if (!title || !price || !owner_id) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -58,7 +59,7 @@ export const createNewListing = asyncHandler(async (req, res) => {
       latitude,
       longitude,
       is_available,
-      owner_id,
+      owner_id
     );
     if (!newListing) {
       return res.status(400).json({ message: "Failed to create listing" });
@@ -72,6 +73,7 @@ export const createNewListing = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Server error", error: error.message });
   }
 });
+
 // Get all listings with optional filters
 export const getListingsController = asyncHandler(async (req, res) => {
   const filters = {
@@ -98,12 +100,10 @@ export const getListingsController = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Server error", error: error.message });
   }
 });
+
 // Get listing by ID
 export const getListingByIdController = asyncHandler(async (req, res) => {
-  const {id} = req.params;
-  console.log("PARAM ID:", id);
-  console.log("REQ PARAMS:", req.params);
-  
+  const { id } = req.params;
   try {
     const listing = await getListingById(id);
     if (!listing) {
@@ -114,11 +114,11 @@ export const getListingByIdController = asyncHandler(async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
 // Update listing by ID
 export const updateListingController = asyncHandler(async (req, res) => {
   const listingId = req.params.id;
   const updates = req.validateData;
-  const userid = req.user.userid;
 
   if (!listingId) {
     return res.status(400).json({ message: "Listing ID is required" });
@@ -128,13 +128,37 @@ export const updateListingController = asyncHandler(async (req, res) => {
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
     }
-    // مالك سكن
+
     if (listing.owner_id !== req.user.userid) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this listing" });
     }
-    const updatedListing = await updateListing(listingId, updates);
+
+    const updatedListing = await updateListing(
+      listingId,
+      updates.title,
+      updates.description,
+      updates.city,
+      updates.area,
+      updates.price,
+      updates.images,
+      updates.currency,
+      updates.is_shared,
+      updates.rooms_count,
+      updates.bathrooms_count,
+      updates.furnished,
+      updates.has_wifi,
+      updates.has_parking,
+      updates.has_kitchen,
+      updates.has_washing_machine,
+      updates.max_occupants,
+      updates.gender_allowed,
+      updates.latitude,
+      updates.longitude,
+      updates.is_available
+    );
+
     if (!updatedListing) {
       return res.status(404).json({ message: "Failed to update listing" });
     }
@@ -148,18 +172,19 @@ export const updateListingController = asyncHandler(async (req, res) => {
     });
   }
 });
+
 // Delete listing by ID
 export const deleteListingController = asyncHandler(async (req, res) => {
   const listingId = req.params.id;
-   const owner_id = req.user.userid;
+  const owner_id = req.user.userid;
   try {
     if (!listingId) {
-      return res.status(400).json({ message: "Listing ID is required"});
+      return res.status(400).json({ message: "Listing ID is required" });
     }
-    const deletedListing =  await deleteListing(listingId, owner_id);
-    if (!deletedListing || deletedListing === 0){
-        return res.status(403).json({ 
-        message: "Failed to delete: Listing not found or you are not the owner" 
+    const deletedListing = await deleteListing(listingId, owner_id);
+    if (!deletedListing || deletedListing === 0) {
+      return res.status(403).json({
+        message: "Failed to delete: Listing not found or you are not the owner"
       });
     }
     return res.status(200).json({ message: "Deleted Successfully " });

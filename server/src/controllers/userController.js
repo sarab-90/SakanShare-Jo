@@ -39,8 +39,13 @@ export const getUserByIdController = asyncHandler(async (req, res) => {
         message: "User not found",
       });
     }
-    return res.status(200).json({success: true , user});
+// delete hash
+    const { hashed_password, ...userWithoutPassword } = user;
 
+    return res.status(200).json({ 
+      success: true, 
+      user: userWithoutPassword 
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

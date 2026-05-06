@@ -25,7 +25,7 @@ const Matches = () => {
       try {
         setLoading(true);
         // هذا المسار يجب أن يعيد قائمة المستخدمين مع حقل match_score
-        const res = await api.get("/match-requests/discover"); 
+        const res = await api.get("/discover"); 
         setMatches(res.data.data || []);
       } catch (err) {
         console.error("Match Fetch Error:", err);

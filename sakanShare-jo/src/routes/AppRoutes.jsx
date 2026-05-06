@@ -8,10 +8,10 @@ import LandlordLayout from "../layouts/LandlordLayout.jsx";
 import UserLayout from "../layouts/UserLayout.jsx";
 
 // Pages
-import Home from "../pages/home/Home";
-import ListingsPage from "../pages/listings/ListingsPage";
-import ListingDetails from "../pages/listings/ListingDetails";
-import CreateListing from "../pages/listings/CreateListing";
+import Home from "../pages/home/Home.jsx";
+import ListingsPage from "../pages/listings/ListingsPage.jsx";
+import ListingDetails from "../pages/listings/ListingDetails.jsx";
+import CreateListing from "../pages/listings/CreateListing.jsx";
 
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import LandlordDashboard from "../pages/landlord/LandlordDashboard.jsx";
@@ -32,6 +32,9 @@ import OnboardingGuard from "../components/auth/OnboardingGuard.jsx";
 import UserPreferences from "../pages/user/UserPreferences.jsx";
 import Analytics from "../pages/admin/Analytics.jsx";
 import Profile from "../pages/admin/Profile.jsx";
+import LandLordProfile from "../pages/landlord/LandLordProfile.jsx";
+import UserProfile from "../pages/user/UserProfile.jsx";
+import AboutUs from "../pages/aboutUs/AboutUs.jsx";
 
 export default function AppRoutes() {
   return (
@@ -39,8 +42,9 @@ export default function AppRoutes() {
       {/* MAIN LAYOUT */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/about/us" element={<AboutUs />} />
       </Route>
-
+      
       <Route path="/listings" element={<ListingsPage />} />
       <Route path="/listings/:id" element={<ListingDetails />} />
 
@@ -60,7 +64,7 @@ export default function AppRoutes() {
         <Route path="/user/preferences" element={<UserPreferences />} />
         <Route path="/user/matches" element={<Matches />} />
         <Route path="/user/requests" element={<MyRequests />} />
-        {/* <Route path="/user/profile" element={<Profile />} /> */}
+        <Route path="/user/profile" element={<UserProfile />} />
         <Route path="/onboarding"element={ <OnboardingWizard /> }/>
       </Route>
       
@@ -75,6 +79,7 @@ export default function AppRoutes() {
       >
         <Route path="/landlord/dashboard" element={<LandlordDashboard />} />
         <Route path="/create-listing" element={<CreateListing />} />
+        <Route path="/landlord/profile" element={<LandLordProfile />} />
       </Route>
 
       {/* ADMIN */}
@@ -93,6 +98,7 @@ export default function AppRoutes() {
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/profile" element={<Profile />} />
       </Route>
+      
     </Routes>
   );
 }

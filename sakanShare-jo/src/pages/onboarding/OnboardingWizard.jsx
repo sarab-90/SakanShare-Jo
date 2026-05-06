@@ -30,7 +30,7 @@ export default function OnboardingWizard() {
     phone: "",
     city: "",
     budget: "",
-    gender: "", // ✅ تم التعديل من genderPreference
+    gender: "", 
   });
 
   const handleChange = (e) => {
@@ -52,33 +52,29 @@ export default function OnboardingWizard() {
     }
   };
 
-  // 🔥 FINISH ONBOARDING
-  const handleFinish = async () => {
-    try {
-      setLoading(true);
+const handleFinish = async () => {
+  try {
+    setLoading(true);
 
-      // ✅ 1. حفظ preferences بشكل صحيح
-      await api.post("/preferences", {
-        budget: formData.budget,
-        city: formData.city,
-        gender: formData.gender,
-      });
+    await api.post("/preferences", {
+      budget: formData.budget,
+      city: formData.city,
+      gender: formData.gender,
+    });
 
-      // ✅ 2. تحديث onboarding
-      const res = await api.patch("/users/onboarding/complete");
-
-      // ✅ 3. تحديث user context
-      setUser(res.data.data);
-
-      // ✅ 4. redirect
-      navigate("/user/home");
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    const res = await api.patch("/users/onboarding");
+    setUser({
+      ...user,              
+      ...formData,          
+      onboarding_completed: true 
+    });
+    navigate("/user/home");
+  } catch (err) {
+    console.log("Onboarding Error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
