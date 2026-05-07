@@ -1,6 +1,5 @@
 import { pool } from "../config/db.js";
 
-// إرسال رسالة جديدة
 export const createMessage = async (sender_id, receiver_id, listing_id, message_text, conversation_id) => {
   const result = await pool.query(
     `INSERT INTO messages (sender_id, receiver_id, listing_id, message_text, conversation_id)
@@ -11,8 +10,7 @@ export const createMessage = async (sender_id, receiver_id, listing_id, message_
   return result.rows[0];
 };
 
-// جلب الرسائل الخاصة بمحادثة معينة
-export const getMessagesByConversation = async (conversation_id) => {
+export const getConversationHistory = async (conversation_id) => {
   const result = await pool.query(
     `SELECT m.*, u.name as sender_name 
      FROM messages m
@@ -23,14 +21,13 @@ export const getMessagesByConversation = async (conversation_id) => {
   );
   return result.rows;
 };
-
-// جلب قائمة المحادثات لمستخدم معين (لعرضها في Inbox)
-export const getUserConversations = async (userid) => {
+export const markMessagesAsRead = async (conversation_id, receiver_id) => {
   const result = await pool.query(
-    `SELECT DISTINCT ON (conversation_id) * FROM messages 
-     WHERE sender_id = $1 OR receiver_id = $1
-     ORDER BY conversation_id, created_at DESC`,
-    [userid]
+    `UPDATE messages 
+     SET is_read = true 
+     WHERE conversation_id = $1 AND receiver_id = $2 AND is_read = false
+     RETURNING *`,
+    [conversation_id, receiver_id]
   );
   return result.rows;
 };
