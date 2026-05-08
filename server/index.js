@@ -14,6 +14,7 @@ import requestRouters from "./src/routes/requestRouters.js"
 import userMatchRequestRoutes from "./src/routes/userMatchRequestRoutes.js"
 import messageRoutes from "./src/routes/messageRoutes.js";
 import reviewRoutes from "./src/routes/reviewRoutes.js";
+import notificationRoutes from "./src/routes/notificationRoutes.js"
 
 import {errorHandler} from "./src/middleware/errorHandlerMiddleware.js";
 import {globalRateLimitMiddleware} from "./src/middleware/globalRateLimitMiddleware.js";
@@ -41,6 +42,8 @@ app.use('/api', requestRouters);
 app.use('/api', userMatchRequestRoutes);
 app.use('/api', messageRoutes);
 app.use('/api', reviewRoutes);
+app.use('/api', notificationRoutes);
+
 
 
 app.use(errorHandler);

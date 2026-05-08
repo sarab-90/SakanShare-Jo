@@ -5,6 +5,6 @@ import { protect } from "../middleware/protectMiddleware.js";
 const router = express.Router();
 
 router.get("/", protect, getMyNotificationsController);
-router.patch("/:id/read", protect, markReadController);
+router.patch("/read/:id", protect, markReadController);
 
 export default router;

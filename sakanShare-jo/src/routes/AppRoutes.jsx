@@ -35,6 +35,7 @@ import Profile from "../pages/admin/Profile.jsx";
 import LandLordProfile from "../pages/landlord/LandLordProfile.jsx";
 import UserProfile from "../pages/user/UserProfile.jsx";
 import AboutUs from "../pages/aboutUs/AboutUs.jsx";
+import PublicProfile from "../pages/profile/PublicProfile.jsx";
 
 export default function AppRoutes() {
   return (
@@ -43,10 +44,13 @@ export default function AppRoutes() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about/us" element={<AboutUs />} />
+        <Route path="/Profile/:id" element={<PublicProfile />} />
       </Route>
       
       <Route path="/listings" element={<ListingsPage />} />
       <Route path="/listings/:id" element={<ListingDetails />} />
+      
+      
 
       {/* AUTH */}
       <Route path="/login" element={<Login />} />

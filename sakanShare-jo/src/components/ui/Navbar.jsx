@@ -85,6 +85,8 @@ export default function Navbar() {
               Sakan<span style={{ color: "#6366F1" }}>Share</span>
             </Typography>
 
+              <Link to="/profile/11">Go to Profile 11</Link>
+
             {/* Desktop Navigation */}
             <Stack
               direction="row"

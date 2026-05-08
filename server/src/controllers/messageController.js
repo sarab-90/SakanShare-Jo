@@ -5,7 +5,7 @@ import {
 } from "../models/messageModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 import { messageSchema } from "../validation/messageValidation.js";
-
+import { insertNotification } from "../models/notificationModel.js";
 // SEND MESSAGE
 export const sendMessageController = asyncHandler(async (req, res) => {
   const { receiver_id, listing_id, message_text, conversation_id } = req.body;
@@ -25,6 +25,12 @@ export const sendMessageController = asyncHandler(async (req, res) => {
       message: "Message sent successfully",
       data: newMessage,
     });
+    await insertNotification(
+      receiver_id,
+      "message",
+      `New message from ${req.user.name}`,
+      `/chat/${conversation_id}`,
+    );
   } catch (error) {
     return res.status(500).json({
       success: false,

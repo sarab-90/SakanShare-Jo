@@ -6,6 +6,7 @@ import {
   deleteUser,
   deactivateUser,
   completeUserOnboarding,
+  findPublicUserById,
 } from "../models/userModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 // get all users
@@ -157,3 +158,17 @@ export const completeOnboarding = asyncHandler(async (req, res) => {
   }
 });
 
+export const getPublicProfileController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await findPublicUserById(id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

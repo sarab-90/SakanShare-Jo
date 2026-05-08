@@ -72,3 +72,9 @@ export const getUserPreferences = async (userId) => {
   const { rows } = await pool.query(query, [userId]);
   return rows[0];
 };
+// (Public Profile)
+export const findPublicUserById = async (id) => {
+    const query = "SELECT userid, name, role FROM users WHERE userid = $1";
+    const { rows } = await pool.query(query, [id]);
+    return rows[0];
+};

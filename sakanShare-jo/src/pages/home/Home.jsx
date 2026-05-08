@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Container, Typography, Button, Stack, Paper } from "@mui/material";
 import { Link } from "react-router-dom";
 import { ExploreRounded, GroupAddRounded, VerifiedUserRounded } from "@mui/icons-material";
-
+import TopLandlords from "../../components/sections/TopLandlords.jsx";
 const Home = () => {
   const features = [
     { title: "Smart Matching", desc: "Find roommates based on lifestyle and habits.", icon: <GroupAddRounded /> },
@@ -13,11 +13,11 @@ const Home = () => {
   return (
     <Box sx={{ bgcolor: "#FFFFFF" }}>
       
-      {/* HERO SECTION - محتوى متوسط الشاشة */}
+      {/* HERO SECTION */}
       <Box sx={{ 
         background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%)", 
         py: { xs: 10, md: 18 },
-        textAlign: "center" // لتوسيط كل شيء
+        textAlign: "center" 
       }}>
         <Container maxWidth="md">
           <Typography 
@@ -40,7 +40,7 @@ const Home = () => {
               color: "#64748B", 
               mb: 5, 
               maxWidth: "650px", 
-              mx: "auto", // لتوسيط النص الوصفي
+              mx: "auto", 
               lineHeight: 1.7
             }}
           >
@@ -50,7 +50,7 @@ const Home = () => {
           <Stack 
             direction={{ xs: "column", sm: "row" }} 
             spacing={2} 
-            justifyContent="center" // لتوسيط الأزرار
+            justifyContent="center" 
             sx={{ mb: 8 }}
           >
             <Button 
@@ -141,6 +141,9 @@ const Home = () => {
           ))}
         </Stack>
       </Container>
+      <Box sx={{ bgcolor: "#FFFFFF", pb: 15 }}>
+        <TopLandlords />
+      </Box>
     </Box>
   );
 };

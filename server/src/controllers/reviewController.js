@@ -2,9 +2,12 @@ import {
   createReview,
   getReviewsByUserId,
   getUserRatingStats,
+  addReply,
+  getTopRatedLandlords
 } from "../models/reviewModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 import { reviewSchema } from "../validation/reviewsValidation.js";
+import { insertNotification } from "../models/notificationModel.js";
 
 // ADD REVIEW
 export const addReviewController = asyncHandler(async (req, res) => {
@@ -29,6 +32,12 @@ export const addReviewController = asyncHandler(async (req, res) => {
       message: "Review submitted successfully",
       review,
     });
+    await insertNotification(
+      reviewed_user_id,
+      "review",
+      `${req.user.name} gave you a ${rating}-star review`,
+      `/profile/${reviewed_user_id}`,
+    );
   } catch (error) {
     if (error.code === "23505") {
       return res.status(400).json({
@@ -91,3 +100,29 @@ export const getUserRatingStatsController = asyncHandler(async (req, res) => {
     });
   }
 });
+
+export const updateReviewReply = asyncHandler(async (req, res) => {
+  const { reviewId } = req.params; 
+  const { owner_reply } = req.body;
+  const ownerId = req.user.userid; 
+
+  try {
+    const updatedReview = await addReply(reviewId, ownerId, owner_reply);
+
+    if (!updatedReview) {
+      return res.status(404).json({ success: false, message: "Review not found" });
+    }
+
+    res.json({ success: true, review: updatedReview });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+export const fetchTopLandlords = async (req, res) => {
+  try {
+    const landlords = await getTopRatedLandlords(4); // جلب أفضل 4 مالكين
+    res.json({ success: true, landlords });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
