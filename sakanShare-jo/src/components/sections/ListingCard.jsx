@@ -24,27 +24,19 @@ import { useNavigate } from "react-router-dom";
 
 const ListingCard = ({ listing }) => {
   const navigate = useNavigate();
-
-  // 🧠 حماية أولية
   if (!listing || typeof listing !== "object") return null;
 
-  // 🧠 ID مرن (يدعم أكثر من شكل من الباك)
   const id = listing.listing_id || listing.id;
-
-  // إذا ما فيه id لا نكسر الصفحة
   if (!id) return null;
 
-  // 🧠 location fallback (city / location)
   const location = listing.location || listing.city || "Unknown location";
 
-  // 🧠 image fallback (string / array / undefined)
   const image = Array.isArray(listing.images)
     ? listing.images[0]
     : listing.images ||
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85";
-
-  // 🧠 price fallback
-  const price = listing.price ?? "N/A";
+      "https://image-cdn.hagzi.com/previews/700x0/61/60/61602e8eb724cc1648d1875afda4cde605596430a15afeaa06db8daf5853815d.jpg.webp";
+  
+      const price = listing.price ?? "N/A";
 
   const handleView = () => {
     navigate(`/listings/${id}`);
@@ -66,7 +58,6 @@ const ListingCard = ({ listing }) => {
         },
       }}
     >
-      {/* IMAGE */}
       <Box sx={{ position: "relative" }}>
         <CardMedia
           component="img"
@@ -89,7 +80,6 @@ const ListingCard = ({ listing }) => {
 
       {/* CONTENT */}
       <CardContent sx={{ p: 3 }}>
-        {/* TITLE + PRICE */}
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -135,7 +125,6 @@ const ListingCard = ({ listing }) => {
           />
         </Stack>
 
-        {/* OWNER + BUTTON */}
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -143,7 +132,7 @@ const ListingCard = ({ listing }) => {
           mt={4}
         >
           <Stack direction="row" alignItems="center" spacing={1.5}>
-            <Avatar src="https://i.pravatar.cc/150?img=12" />
+            <Avatar src="" />
 
             <Box>
               <Typography variant="body2" fontWeight="700">

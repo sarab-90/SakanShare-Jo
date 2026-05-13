@@ -1,6 +1,5 @@
 import { pool } from "../config/db.js";
 
-// جلب كل إشعارات المستخدم
 export const getNotificationsByUserId = async (userId) => {
   const result = await pool.query(
     `SELECT * FROM notifications 
@@ -11,7 +10,6 @@ export const getNotificationsByUserId = async (userId) => {
   return result.rows;
 };
 
-// تحديث الإشعار ليصبح مقروءاً
 export const markNotificationAsRead = async (notificationId, userId) => {
   await pool.query(
     `UPDATE notifications SET is_read = true 
@@ -19,8 +17,6 @@ export const markNotificationAsRead = async (notificationId, userId) => {
     [notificationId, userId]
   );
 };
-
-//  مساعدة لإنشاء إشعار 
 export const insertNotification = async (user_id, type, content, link) => {
   const result = await pool.query(
     `INSERT INTO notifications (user_id, type, content, link) 

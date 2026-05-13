@@ -5,6 +5,7 @@ import {createRequestController,
     getMyRequestsController,
     getAllRequestsController,
     markAsViewedController,
+    createRoleRequestController
 } from "../controllers/requestsController.js";
 import {createRequestSchema} from "../validation/requestsValidation.js";
 import { validate } from "../middleware/validateMiddleware.js";
@@ -14,7 +15,8 @@ import { authorizeRoles } from "../middleware/authorizeRoles.js";
 import express from "express";
 const router = express.Router();
 
-router.post("/request",protect, authorizeRoles("user"), validate(createRequestSchema) ,createRequestController);
+router.post("/request",protect, validate(createRequestSchema) ,createRequestController);
+router.post("/role/request",protect ,createRoleRequestController);
 router.put("/request/accept/:request_id", protect, authorizeRoles("admin", "landlord"), acceptRequestController);
 router.put( "/request/reject/:request_id", protect, authorizeRoles("admin", "landlord"), rejectRequestController);
 router.get("/request/owner", protect, authorizeRoles("admin", "landlord"), getRequestsForOwnerController);

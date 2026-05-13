@@ -36,6 +36,11 @@ import LandLordProfile from "../pages/landlord/LandLordProfile.jsx";
 import UserProfile from "../pages/user/UserProfile.jsx";
 import AboutUs from "../pages/aboutUs/AboutUs.jsx";
 import PublicProfile from "../pages/profile/PublicProfile.jsx";
+import Explore from "../pages/listings/Explore.jsx";
+import Contact from "../pages/contact/Contact.jsx";
+import AdminMessages from "../pages/admin/AdminMessages.jsx";
+import UsersMessages from "../components/users/UsersMessages.jsx";
+import OwnerOnboarding from "../pages/landlord/OwnerOnboarding.jsx";
 
 export default function AppRoutes() {
   return (
@@ -45,12 +50,14 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/about/us" element={<AboutUs />} />
         <Route path="/Profile/:id" element={<PublicProfile />} />
+        <Route path="/listings" element={<ListingsPage />} />
+        <Route path="/listings/:id" element={<ListingDetails />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/owner/onboarding" element={<OwnerOnboarding/>} />
+
+
       </Route>
-      
-      <Route path="/listings" element={<ListingsPage />} />
-      <Route path="/listings/:id" element={<ListingDetails />} />
-      
-      
 
       {/* AUTH */}
       <Route path="/login" element={<Login />} />
@@ -67,11 +74,11 @@ export default function AppRoutes() {
         <Route path="/user/home" element={<UserHome />} />
         <Route path="/user/preferences" element={<UserPreferences />} />
         <Route path="/user/matches" element={<Matches />} />
+        <Route path="/messages" element={<UsersMessages />} />
         <Route path="/user/requests" element={<MyRequests />} />
         <Route path="/user/profile" element={<UserProfile />} />
-        <Route path="/onboarding"element={ <OnboardingWizard /> }/>
+        <Route path="/onboarding" element={<OnboardingWizard />} />
       </Route>
-      
 
       {/* LANDLORD */}
       <Route
@@ -82,6 +89,7 @@ export default function AppRoutes() {
         }
       >
         <Route path="/landlord/dashboard" element={<LandlordDashboard />} />
+        <Route path="/messages" element={<UsersMessages />} />
         <Route path="/create-listing" element={<CreateListing />} />
         <Route path="/landlord/profile" element={<LandLordProfile />} />
       </Route>
@@ -101,8 +109,9 @@ export default function AppRoutes() {
         <Route path="/admin/requests" element={<RequestsManagement />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/profile" element={<Profile />} />
+        <Route path="/admin/messages" element={<AdminMessages />} />
+
       </Route>
-      
     </Routes>
   );
 }

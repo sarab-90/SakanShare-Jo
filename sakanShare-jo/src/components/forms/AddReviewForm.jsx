@@ -25,10 +25,9 @@ const AddReviewForm = ({ reviewedUserId, onReviewAdded }) => {
         toast.success("Review added successfully!");
         setRating(0);
         setComment("");
-        if (onReviewAdded) onReviewAdded(); // لتحديث القائمة فوراً
+        if (onReviewAdded) onReviewAdded();
       }
     } catch (error) {
-      // هنا نستخدم التحقق الذي وضعناه في الباك إند (خطأ 23505)
       const msg = error.response?.data?.message || "Failed to add review";
       toast.error(msg);
     } finally {
@@ -73,5 +72,4 @@ const AddReviewForm = ({ reviewedUserId, onReviewAdded }) => {
     </Paper>
   );
 };
-
 export default AddReviewForm;

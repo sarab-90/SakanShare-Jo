@@ -19,7 +19,6 @@ const inputStyle = {
 const CreateListing = () => {
   const [loading, setLoading] = useState(false);
 
-  // تحديث الحالة لتشمل الحقول المطلوبة من السيرفر
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -42,7 +41,6 @@ const CreateListing = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // التحقق الأساسي
     if (!formData.title || !formData.price || !formData.city || !formData.area) {
       return toast.error("Please fill all required fields");
     }
@@ -50,7 +48,6 @@ const CreateListing = () => {
     try {
       setLoading(true);
 
-      // إرسال البيانات (تأكد أن السيرفر يتوقع أرقاماً للحقول العددية)
       const dataToSend = {
         ...formData,
         price: Number(formData.price),
@@ -63,14 +60,12 @@ const CreateListing = () => {
 
       toast.success(res.data.message || "Listing created successfully");
 
-      // إعادة تعيين النموذج
       setFormData({
         title: "", description: "", price: "", city: "",
         area: "", rooms_count: "", bathrooms_count: "", max_occupants: ""
       });
 
     } catch (error) {
-      // عرض أول رسالة خطأ تأتي من السيرفر إذا وجدت
       const serverError = error.response?.data?.errors?.[0] || error.response?.data?.message;
       toast.error(serverError || "Failed to create listing");
     } finally {
@@ -97,7 +92,6 @@ const CreateListing = () => {
                 />
               </Grid>
 
-              {/* CITY & AREA */}
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth label="City" name="city"
@@ -113,7 +107,6 @@ const CreateListing = () => {
                 />
               </Grid>
 
-              {/* PRICE */}
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth label="Price" name="price" type="number"
@@ -123,7 +116,6 @@ const CreateListing = () => {
                 />
               </Grid>
 
-              {/* ROOMS COUNT */}
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth label="Rooms Count" name="rooms_count" type="number"
@@ -133,7 +125,6 @@ const CreateListing = () => {
                 />
               </Grid>
 
-              {/* BATHROOMS */}
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth label="Bathrooms" name="bathrooms_count" type="number"
@@ -143,7 +134,6 @@ const CreateListing = () => {
                 />
               </Grid>
 
-              {/* MAX OCCUPANTS */}
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth label="Max Occupants" name="max_occupants" type="number"
@@ -153,7 +143,6 @@ const CreateListing = () => {
                 />
               </Grid>
 
-              {/* DESCRIPTION */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth multiline rows={4} label="Description"

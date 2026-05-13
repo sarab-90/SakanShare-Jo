@@ -57,10 +57,8 @@ const AdminTopbar = () => {
         >
           ADMIN PANEL
         </Typography>
-
         {/* RIGHT */}
         <Stack direction="row" spacing={2} alignItems="center">
-
           <Typography
             sx={{
               fontSize: 25,
@@ -70,14 +68,12 @@ const AdminTopbar = () => {
           >
             {user?.name || "Admin"}
           </Typography>
-
           {/* AVATAR */}
           <IconButton onClick={handleMenuOpen}>
             <Avatar sx={{ bgcolor: "#6366F1" }}>
               {user?.name?.charAt(0)?.toUpperCase() || "A"}
             </Avatar>
           </IconButton>
-
           {/* MENU */}
           <Menu
             anchorEl={anchorEl}
@@ -85,7 +81,6 @@ const AdminTopbar = () => {
             onClose={handleMenuClose}
           >
             <MenuItem onClick={handleMenuClose}>
-              {/* <Profile fontSize="small" sx={{ mr: 1 }} /> */}
               Profile
             </MenuItem>
 
@@ -100,5 +95,4 @@ const AdminTopbar = () => {
     </AppBar>
   );
 };
-
 export default AdminTopbar;

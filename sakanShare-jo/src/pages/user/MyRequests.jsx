@@ -23,14 +23,12 @@ const MyRequests = () => {
   const [received, setReceived] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 تعديل المسارات لتكون مباشرة كما في الباك اند الخاص بكِ
   useEffect(() => {
     if (!user) return;
 
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        // التعديل هنا: تمت إزالة /match-requests
         const [sentRes, receivedRes] = await Promise.all([
           api.get("/sent"), 
           api.get("/received")
@@ -47,16 +45,10 @@ const MyRequests = () => {
 
     fetchRequests();
   }, [user]);
-
-  // 🔥 تحديث الحالة (Accept / Reject)
   const updateStatus = async (id, status) => {
     try {
-      // التعديل هنا: المسار أصبح مباشرة بعد الـ /api/
       await api.patch(`/${id}`, { status });
-
       toast.success(`Request ${status} successfully`);
-
-      // تحديث الواجهة فوراً
       setReceived((prev) =>
         prev.map((r) => (r.request_id === id ? { ...r, status } : r))
       );

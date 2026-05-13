@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 import { UserContext } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api.js"; // استيراد الـ API لجلب الشقق
+import api from "../../services/api.js"; 
 import { 
   AutoAwesomeRounded, 
   HistoryRounded, 
@@ -20,17 +20,14 @@ import {
 const UserHome = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  
-  // حقول جديدة لعرض الشقق
+
   const [listings, setListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(true);
 
-  // 1. جلب الشقق من الباك أند فور فتح الصفحة
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const res = await api.get("/listings");
-        // نأخذ أول 4 شقق فقط لعرضها كمعاينة
         setListings(res.data.data.slice(0, 4));
       } catch (err) {
         console.error("Error fetching listings:", err);
@@ -41,7 +38,6 @@ const UserHome = () => {
     fetchListings();
   }, []);
 
-  // 2. كودك الأصلي لحساب نسبة الإنجاز (دون تغيير)
   const calculateProgress = () => {
     if (user?.onboarding_completed) return 100;
     const requiredFields = [user?.city, user?.budget, user?.gender, user?.phone];
@@ -58,8 +54,6 @@ const UserHome = () => {
 
   return (
     <Box sx={{ bgcolor: "#F8FAFC", minHeight: "100vh" }}>
-      
-      {/* SECTION 1: WELCOME & PROGRESS (كودك الأصلي) */}
       <Box sx={{ 
         pt: 8, pb: 10, 
         background: "linear-gradient(180deg, #F0F4FF 0%, #F8FAFC 100%)",
@@ -71,9 +65,8 @@ const UserHome = () => {
               <Stack spacing={2}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="h4" sx={{ fontWeight: 900, color: "#0F172A", letterSpacing: "-1px" }}>
-                    Hello, {user?.name?.split(' ')[0] || "User"}!
+                    Hello, {user?.name?.split()[0] || "User"} !
                   </Typography>
-                  <SentimentSatisfiedAltRounded sx={{ color: "#F59E0B", fontSize: 32 }} />
                 </Box>
                 <Typography variant="h6" sx={{ color: "#64748B", fontWeight: 500, maxWidth: 500, lineHeight: 1.5 }}>
                   {progress < 100 
@@ -102,7 +95,6 @@ const UserHome = () => {
       </Box>
 
       <Container maxWidth="lg" sx={{ mt: -4, pb: 8 }}>
-        {/* الأزرار السريعة (كودك الأصلي) */}
         <Grid container spacing={3} mb={6}>
           {[
             { title: user?.onboarding_completed ? "My Preferences" : "Setup Profile", icon: <FactCheckRounded />, path: user?.onboarding_completed ? "/user/preferences" : "/onboarding", color: "#6366F1" },
@@ -118,7 +110,6 @@ const UserHome = () => {
           ))}
         </Grid>
 
-        {/* SECTION 2: عرض الشقق الحقيقية (الإضافة الجديدة) */}
         <Box sx={{ mb: 6 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
             <Typography variant="h5" fontWeight={900}>Available Apartments</Typography>
@@ -136,7 +127,7 @@ const UserHome = () => {
                       <CardMedia
                         component="img"
                         height="140"
-                        image={listing.images?.[0] || "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=500"}
+                        image={listing.images?.[0] || ""}
                       />
                       <CardContent>
                         <Typography variant="subtitle2" fontWeight={800} noWrap>{listing.title}</Typography>
@@ -157,8 +148,6 @@ const UserHome = () => {
             </Grid>
           )}
         </Box>
-
-        {/* SECTION 3: المقترحات الذكية (كودك الأصلي) */}
         <Box>
           <Typography variant="h5" fontWeight={900} mb={3}>Suggested for you</Typography>
           <Paper sx={{ p: 6, borderRadius: 8, border: progress < 100 ? "2px dashed #E2E8F0" : "1px solid #E2E8F0", textAlign: "center", bgcolor: progress < 100 ? "transparent" : "white" }}>

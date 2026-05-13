@@ -15,6 +15,7 @@ import {
   PeopleAltRounded,
   ReceiptLongRounded,
   AnalyticsRounded,
+  EmailRounded,
 } from "@mui/icons-material";
 
 const DRAWER_WIDTH = 280;
@@ -25,6 +26,7 @@ const menuItems = [
   { label: "Users", icon: <PeopleAltRounded />, path: "/admin/users" },
   { label: "Requests", icon: <ReceiptLongRounded />, path: "/admin/requests" },
   { label: "Analytics", icon: <AnalyticsRounded />, path: "/admin/analytics" },
+  { label: "Messages", icon: <EmailRounded />, path: "/admin/messages" },
 ];
 
 const AdminSidebar = () => {
@@ -40,11 +42,9 @@ const AdminSidebar = () => {
         top: 0,
         display: "flex",
         flexDirection: "column",
-        // إضافة ظل ناعم جداً جهة اليمين كما في التصاميم الحديثة
         boxShadow: "4px 0 24px rgba(0,0,0,0.02)",
       }}
     >
-      {/* LOGO AREA */}
       <Box sx={{ px: 1, mb: 4 }}>
         <Typography
           variant="h5"
@@ -61,8 +61,7 @@ const AdminSidebar = () => {
           Admin Management Suite
         </Typography>
       </Box>
-
-      {/* MENU LIST */}
+      {/* MENU  */}
       <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => (
           <ListItem key={item.path} disablePadding sx={{ mb: 1 }}>
@@ -76,7 +75,7 @@ const AdminSidebar = () => {
               {({ isActive }) => (
                 <ListItemButton
                   sx={{
-                    borderRadius: "16px", // حواف دائرية أكثر كما في الصورة
+                    borderRadius: "16px",
                     py: 1.5,
                     px: 2,
                     transition: "all 0.2s ease",
@@ -84,7 +83,7 @@ const AdminSidebar = () => {
                     color: isActive ? "#6366F1" : "#64748B",
                     "&:hover": {
                       bgcolor: isActive ? "rgba(99,102,241,0.12)" : "#F8FAFC",
-                      transform: "translateX(4px)", // حركة بسيطة عند التمرير
+                      transform: "translateX(4px)",
                     },
                   }}
                 >
@@ -139,5 +138,4 @@ const AdminSidebar = () => {
     </Box>
   );
 };
-
 export default AdminSidebar;

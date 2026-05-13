@@ -11,7 +11,6 @@ const LandlordLayout = () => {
 
       <Navbar user={user}/>
 
-      {/* CONTENT */}
       <Box sx={{ px: 2, py: 3 }}>
         <Outlet />
       </Box>

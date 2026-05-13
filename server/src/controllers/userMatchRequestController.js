@@ -11,7 +11,7 @@ import {
   createMatchRequestSchema,
   updateMatchRequestSchema,
 } from "../validation/userMatchRequestValidation.js";
-// CREATE REQUEST
+
 export const sendMatchRequest = asyncHandler( async (req, res) => {
   try {
     const sender_id = req.user.userid;
@@ -28,7 +28,7 @@ export const sendMatchRequest = asyncHandler( async (req, res) => {
         message: "You cannot send request to yourself",
       });
     }
-    // check duplicate
+  
     const existing = await checkExistingRequest(sender_id, receiver_id);
     if (existing) {
       return res.status(400).json({
@@ -48,7 +48,6 @@ export const sendMatchRequest = asyncHandler( async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 });
-// GET SENT
 export const getMySentMatchRequests = asyncHandler( async (req, res) => {
   try {
     const userid = req.user.userid;
@@ -63,7 +62,6 @@ export const getMySentMatchRequests = asyncHandler( async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 });
-// GET RECEIVED
 export const getMyReceivedMatchRequests = asyncHandler(async (req, res) => {
   try {
     const userid = req.user.userid;
@@ -78,7 +76,6 @@ export const getMyReceivedMatchRequests = asyncHandler(async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 });
-// UPDATE STATUS
 export const changeMatchRequestStatus = asyncHandler(async (req, res) => {
   try {
     const { request_id } = req.params;

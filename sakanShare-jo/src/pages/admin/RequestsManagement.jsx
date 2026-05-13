@@ -1,131 +1,252 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
-  Box, Paper, Typography, Chip, Button, Stack, CircularProgress,
-  TextField, MenuItem, Grid, Avatar
+  Box,
+  Paper,
+  Typography,
+  Chip,
+  Button,
+  Stack,
+  CircularProgress,
+  TextField,
+  MenuItem,
+  Grid,
+  Avatar,
 } from "@mui/material";
-// سنبقي فقط الأيقونات الأساسية للبطاقات العلوية
-import { Users, Clock, Eye, CheckCircle, XCircle } from "lucide-react";
+import { Users, Clock, CheckCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { RequestContext } from "../../context/RequestContext.jsx";
+import api from "../../services/api.js";
 
 const statusConfig = {
-  pending:  { label: "Pending",  bgcolor: "#fff7ed", color: "#c2410c" },
-  viewed:   { label: "Viewed",   bgcolor: "#eff6ff", color: "#1d4ed8" },
+  pending: { label: "Pending", bgcolor: "#fff7ed", color: "#c2410c" },
+  viewed: { label: "Viewed", bgcolor: "#eff6ff", color: "#1d4ed8" },
   accepted: { label: "Accepted", bgcolor: "#f0fdf4", color: "#15803d" },
   rejected: { label: "Rejected", bgcolor: "#fef2f2", color: "#b91c1c" },
 };
 
 const RequestsManagement = () => {
-  const { requests, loading, getAllRequests, acceptRequest, rejectRequest, markAsViewed } = useContext(RequestContext);
+  const {
+    requests,
+    loading,
+    getAllRequests,
+    acceptRequest,
+    rejectRequest,
+    markAsViewed,
+  } = useContext(RequestContext);
+
   const [statusFilter, setStatusFilter] = useState("all");
+  const [roleRequests, setRoleRequests] = useState([]);
 
-  useEffect(() => { getAllRequests(); }, []);
+  useEffect(() => {
+    getAllRequests();
+    fetchRoleRequests();
+  }, []);
 
-  const stats = useMemo(() => ({
-    total: requests?.length || 0,
-    pending: requests?.filter((r) => r.status === "pending").length || 0,
-    accepted: requests?.filter((r) => r.status === "accepted").length || 0,
-  }), [requests]);
+  const stats = useMemo(
+    () => ({
+      total: requests?.length || 0,
+      pending: requests?.filter((r) => r.status === "pending").length || 0,
+      accepted: requests?.filter((r) => r.status === "accepted").length || 0,
+    }),
+    [requests]
+  );
+  const filteredRequests = (requests || []).filter(
+    (r) => statusFilter === "all" || r.status === statusFilter
+  );
 
-  const handleAction = async (actionFn, id, successMsg) => {
-    const loadingToast = toast.loading("Updating...");
+  const handleAction = async (fn, id, msg) => {
+    const t = toast.loading("Updating...");
     try {
-      await actionFn(id);
-      toast.success(successMsg, { id: loadingToast });
+      await fn(id);
+      toast.success(msg, { id: t });
       getAllRequests();
-    } catch (err) {
-      toast.error("Error", { id: loadingToast });
+    } catch {
+      toast.error("Error", { id: t });
     }
   };
 
-  const filteredRequests = (requests || []).filter(r => statusFilter === "all" || r.status === statusFilter);
+  const fetchRoleRequests = async () => {
+    try {
+      const res = await api.get("/role/requests");
+      setRoleRequests(res.data.requests || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  const handleAcceptRole = async (id) => {
+    try {
+      await api.put(`/accept/${id}`);
+      
+      toast.success("User is now landlord");
+      fetchRoleRequests();
+      await refreshUser();
+    } catch {
+      toast.error("Error");
+    }
+  };
+
+  const handleRejectRole = async (id) => {
+    try {
+      await api.put(`/reject/${id}`);
+      toast.success("Request rejected");
+      fetchRoleRequests();
+      await refreshUser();
+    } catch {
+      toast.error("Error");
+    }
+  };
   return (
     <Box sx={{ p: 1 }}>
-      <Typography variant="h5" fontWeight={800} mb={1}>Requests</Typography>
-      <Typography variant="body2" color="text.secondary" mb={4}>Manage incoming housing applications</Typography>
+      <Typography variant="h5" fontWeight={800}>Requests</Typography>
 
-      {/* Analytics - أبقيناها لأنها تعطي طابع الـ Dashboard */}
       <Grid container spacing={2} mb={4}>
         {[
-          { label: "Total", value: stats.total, icon: <Users size={20} />, color: "#6366f1" },
-          { label: "Pending", value: stats.pending, icon: <Clock size={20} />, color: "#f59e0b" },
-          { label: "Accepted", value: stats.accepted, icon: <CheckCircle size={20} />, color: "#10b981" },
+          { label: "Total", value: stats.total, icon: <Users />, color: "#6366f1" },
+          { label: "Pending", value: stats.pending, icon: <Clock />, color: "#f59e0b" },
+          { label: "Accepted", value: stats.accepted, icon: <CheckCircle />, color: "#10b981" },
         ].map((item) => (
           <Grid item xs={12} md={4} key={item.label}>
-            <Paper sx={{ p: 2.5, borderRadius: 3, display: "flex", alignItems: "center", gap: 2, border: "1px solid #f1f5f9" }}>
-              <Box sx={{ p: 1, borderRadius: 2, bgcolor: `${item.color}10`, color: item.color }}>{item.icon}</Box>
+            <Paper sx={{ p: 2.5, display: "flex", gap: 2 }}>
+              <Box sx={{ p: 1, bgcolor: `${item.color}10`, color: item.color }}>
+                {item.icon}
+              </Box>
               <Box>
-                <Typography variant="caption" fontWeight={600} color="text.secondary">{item.label}</Typography>
-                <Typography variant="h6" fontWeight={800}>{item.value}</Typography>
+                <Typography variant="caption">{item.label}</Typography>
+                <Typography fontWeight={800}>{item.value}</Typography>
               </Box>
             </Paper>
           </Grid>
         ))}
       </Grid>
 
-      {/* Filter */}
+      {/* FILTER */}
       <Stack direction="row" justifyContent="flex-end" mb={2}>
         <TextField
-          select size="small" value={statusFilter}
+          select
+          size="small"
+          value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          sx={{ width: 150, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
         >
-          <MenuItem value="all">All Status</MenuItem>
+          <MenuItem value="all">All</MenuItem>
           <MenuItem value="pending">Pending</MenuItem>
           <MenuItem value="accepted">Accepted</MenuItem>
+          <MenuItem value="rejected">Rejected</MenuItem>
         </TextField>
       </Stack>
 
-      <Paper sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e2e8f0" }}>
+      {/* REQUESTS */}
+      <Paper>
         {loading ? (
-          <Box py={10} textAlign="center"><CircularProgress size={30} /></Box>
-        ) : (
-          <Box>
-             {/* Header */}
-            <Box sx={{ display: "grid", gridTemplateColumns: "1.5fr 2fr 1fr 1.5fr", px: 3, py: 1.5, bgcolor: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
-              {["SENDER", "MESSAGE", "STATUS", "ACTIONS"].map(h => (
-                <Typography key={h} variant="caption" fontWeight={800} color="text.secondary">{h}</Typography>
-              ))}
-            </Box>
-
-            {/* Rows */}
-            {filteredRequests.map((req) => {
-              const status = statusConfig[req.status] || statusConfig.pending;
-              return (
-                <Box key={req.request_id} sx={{ 
-                  display: "grid", gridTemplateColumns: "1.5fr 2fr 1fr 1.5fr", 
-                  px: 3, py: 2, borderBottom: "1px solid #f1f5f9", alignItems: "center"
-                }}>
-                  <Stack direction="row" spacing={1.5} alignItems="center">
-                    <Avatar sx={{ width: 32, height: 32, fontSize: 12, bgcolor: "#f1f5f9", color: "#475569" }}>{req.sender_name?.charAt(0)}</Avatar>
-                    <Box>
-                      <Typography variant="body2" fontWeight={700}>{req.sender_name}</Typography>
-                      <Typography variant="caption" color="text.secondary">{req.sender_phone}</Typography>
-                    </Box>
-                  </Stack>
-
-                  <Typography variant="body2" color="text.secondary" noWrap sx={{ pr: 2 }}>{req.message}</Typography>
-
-                  <Chip label={status.label} size="small" sx={{ fontWeight: 700, fontSize: 10, bgcolor: status.bgcolor, color: status.color }} />
-
-                  <Stack direction="row" spacing={1} justifyContent="flex-end">
-                    <Button size="small" onClick={() => handleAction(markAsViewed, req.request_id, "Viewed")} sx={{ textTransform: 'none', fontWeight: 700 }}>View</Button>
-                    <Button 
-                      variant="contained" size="small" disableElevation
-                      disabled={req.status !== "pending"}
-                      onClick={() => handleAction(acceptRequest, req.request_id, "Accepted")}
-                      sx={{ textTransform: 'none', bgcolor: "#10b981", borderRadius: 1.5 }}
-                    >
-                      Accept
-                    </Button>
-                  </Stack>
-                </Box>
-              );
-            })}
+          <Box py={10} textAlign="center">
+            <CircularProgress />
           </Box>
+        ) : (
+          filteredRequests.map((req) => {
+            const status = statusConfig[req.status] || statusConfig.pending;
+
+            return (
+              <Box
+                key={req.request_id}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1.5fr 2fr 1fr 1.5fr",
+                  p: 2,
+                  borderBottom: "1px solid #eee",
+                }}
+              >
+                <Stack direction="row" spacing={1}>
+                  <Avatar>{req.sender_name?.charAt(0)}</Avatar>
+                  <Box>
+                    <Typography fontWeight={700}>{req.sender_name}</Typography>
+                    <Typography variant="caption">
+                      {req.sender_phone}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Typography noWrap>{req.message}</Typography>
+
+                <Chip
+                  label={status.label}
+                  sx={{ bgcolor: status.bgcolor, color: status.color }}
+                />
+
+                <Stack direction="row" spacing={1} justifyContent="flex-end">
+               
+                  <Button
+                    onClick={() =>
+                      handleAction(markAsViewed, req.request_id, "Viewed")
+                    }
+                    disabled={req.status !== "pending"}
+                  >
+                    View
+                  </Button>
+
+                  <Button
+                    color="success"
+                    disabled={req.status !== "pending"}
+                    onClick={() =>
+                      handleAction(acceptRequest, req.request_id, "Accepted")
+                    }
+                  >
+                    Accept
+                  </Button>
+
+                  <Button
+                    color="error"
+                    disabled={req.status !== "pending"}
+                    onClick={() =>
+                      handleAction(rejectRequest, req.request_id, "Rejected")
+                    }
+                  >
+                    Reject
+                  </Button>
+                </Stack>
+              </Box>
+            );
+          })
         )}
       </Paper>
+
+      {/* ROLE REQUESTS */}
+      <Box mt={5}>
+        <Typography variant="h5" fontWeight={800} mb={3}>
+          Landlord Requests
+        </Typography>
+
+        {roleRequests.map((req) => (
+          <Paper key={req.id} sx={{ p: 3, mb: 2 }}>
+            <Stack direction="row" justifyContent="space-between">
+              <Box>
+                <Typography fontWeight={700}>{req.name}</Typography>
+                <Typography>{req.email}</Typography>
+                <Typography>
+                  {req.phone} - {req.city}
+                </Typography>
+              </Box>
+
+              <Stack direction="row" spacing={1}>
+                <Button
+                  color="success"
+                  disabled={req.status !== "pending"}
+                  onClick={() => handleAcceptRole(req.id)}
+                >
+                  Accept
+                </Button>
+
+                <Button
+                  color="error"
+                  disabled={req.status !== "pending"}
+                  onClick={() => handleRejectRole(req.id)}
+                >
+                  Reject
+                </Button>
+              </Stack>
+            </Stack>
+          </Paper>
+        ))}
+      </Box>
     </Box>
   );
 };

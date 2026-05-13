@@ -1,10 +1,3 @@
-// صفحة تعرض جميع الـ listings بشكل Cards
-// هذا هو الصفحة التي:
-
-// تجيب كل الـ listings من الـ backend
-// تعرضهم باستخدام ListingCard
-// تربط بين إنشاء + عرض البيانات
-
 import React, { useEffect, useState } from "react";
 
 import {
@@ -16,7 +9,7 @@ import {
 } from "@mui/material";
 
 import api from "../../services/api.js";
-import ListingCard from "../../pages/listings/ListingCard.jsx";
+import ListingCard from "../../components/sections/ListingCard.jsx";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
@@ -53,7 +46,6 @@ const ListingsPage = () => {
       }}
     >
       <Container maxWidth="lg">
-        {/* HEADER */}
         <Box mb={5}>
           <Typography variant="h4" fontWeight="800" color="primary.main">
             Available Listings
@@ -64,21 +56,18 @@ const ListingsPage = () => {
           </Typography>
         </Box>
 
-        {/* LOADING */}
         {loading && (
           <Box mt={10}>
             <CircularProgress color="secondary" />
           </Box>
         )}
 
-        {/* ERROR */}
         {error && (
           <Typography color="error" textAlign="center">
             {error}
           </Typography>
         )}
 
-        {/* LISTINGS GRID */}
         {!loading && !error && (
           <Grid container spacing={4}>
             {listings?.map((listing) => (

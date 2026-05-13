@@ -64,13 +64,20 @@ export const getAllListings = async () => {
 
   return result.rows;
 };
-// get listing by id
+
 export const getListingById = async (id) => {
   const result = await pool.query(
-    `SELECT sh.*, u.name as owner_name, u.phone as owner_phone
+    `SELECT 
+        sh.*, 
+        u.name as owner_name, 
+        u.phone as owner_phone,
+        COALESCE(ROUND(AVG(r.rating), 1), 0) as owner_avg_rating,
+        COUNT(r.review_id) as total_reviews
      FROM shared_housing sh
      JOIN users u ON sh.owner_id = u.userid
-     WHERE sh.listing_id = $1`,
+     LEFT JOIN reviews r ON u.userid = r.reviewed_user_id
+     WHERE sh.listing_id = $1
+     GROUP BY sh.listing_id, u.userid`,
     [id]
   );
   return result.rows[0];

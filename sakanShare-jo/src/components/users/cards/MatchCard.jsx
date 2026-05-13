@@ -17,7 +17,6 @@ const MatchCard = ({ user, onSendRequest, loading }) => {
         <Chip label={user.role} size="small" />
       </Box>
 
-      {/* Score */}
       <Box sx={{ mt: 2 }}>
         <Typography fontSize={13}>
           Match Score: {user.score}%
@@ -29,8 +28,6 @@ const MatchCard = ({ user, onSendRequest, loading }) => {
           sx={{ mt: 1, height: 6, borderRadius: 5 }}
         />
       </Box>
-
-      {/* Button */}
       <Button
         fullWidth
         variant="contained"
@@ -44,5 +41,4 @@ const MatchCard = ({ user, onSendRequest, loading }) => {
     </Paper>
   );
 };
-
 export default MatchCard;

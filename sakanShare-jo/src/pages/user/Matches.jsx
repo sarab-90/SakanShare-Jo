@@ -19,12 +19,10 @@ const Matches = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // جلب المستخدمين المتطابقين بناءً على الخوارزمية
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         setLoading(true);
-        // هذا المسار يجب أن يعيد قائمة المستخدمين مع حقل match_score
         const res = await api.get("/discover"); 
         setMatches(res.data.data || []);
       } catch (err) {
@@ -123,7 +121,6 @@ const Matches = () => {
 
                 <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
-                {/* Compatibility Details */}
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                   <Grid item xs={6}>
                     <Stack direction="row" spacing={1} alignItems="center">
@@ -142,7 +139,6 @@ const Matches = () => {
                   </Grid>
                 </Grid>
 
-                {/* Progress Bar */}
                 <Box sx={{ mb: 3 }}>
                   <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
                     <Typography variant="caption" fontWeight={700}>Match Quality</Typography>

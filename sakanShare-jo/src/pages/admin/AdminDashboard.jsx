@@ -19,8 +19,6 @@ import {
   ResponsiveContainer,
   Tooltip as RechartsTooltip,
 } from "recharts";
-
-// Lucide Icons - Stable and Modern
 import {
   Trash2,
   Search,
@@ -32,7 +30,6 @@ import {
   DollarSign,
   Download,
 } from "lucide-react";
-
 import { UserContext } from "../../context/AuthContext.jsx";
 import { ListingContext } from "../../context/ListingContext.jsx";
 import { PreferencesContext } from "../../context/PreferencesContext.jsx";
@@ -340,7 +337,6 @@ const AdminDashboard = () => {
                 )}
               </Box>
 
-              {/* Pagination Placeholder */}
               <Stack
                 direction="row"
                 justifyContent="center"
@@ -367,7 +363,6 @@ const AdminDashboard = () => {
             </Paper>
           </Grid>
 
-          {/* Role Distribution Chart */}
           <Grid item xs={12} lg={4}>
             <Paper
               elevation={0}

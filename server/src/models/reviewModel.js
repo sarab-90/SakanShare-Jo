@@ -29,7 +29,6 @@ export const getUserRatingStats = async (userId) => {
   );
   return result.rows[0];
 };
-// إضافة رد المالك 
 export const addReply = async (review_id, reviewed_user_id, owner_reply) => {
   const result = await pool.query(
     `UPDATE reviews 

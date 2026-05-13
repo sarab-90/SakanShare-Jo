@@ -11,9 +11,8 @@ const EditUserModal = ({ open, user, mode, onClose, onSave }) => {
     phone: "",
     role: "user",
     is_active: true,
-    password: "", // حقل إضافي للإضافة
+    password: "", 
   });
-
   useEffect(() => {
     if (user && mode === "edit") {
       setForm({
@@ -25,7 +24,6 @@ const EditUserModal = ({ open, user, mode, onClose, onSave }) => {
         password: "", 
       });
     } else {
-      // تصفير الحقول في حالة الإضافة
       setForm({
         name: "", email: "", phone: "", role: "user",
         is_active: true, password: ""
@@ -42,15 +40,12 @@ const EditUserModal = ({ open, user, mode, onClose, onSave }) => {
   };
 
   const handleSubmit = () => {
-    // التعديل الجوهري: إذا كان إضافة، لا نشترط وجود userid
     if (mode === "edit") {
       onSave(user.userid, form.name, form.email, form.phone, form.role, form.is_active);
     } else {
-      // في حالة الإضافة، نرسل البيانات كاملة مع الباسورد
       onSave(null, form.name, form.email, form.phone, form.role, form.is_active, form.password);
     }
   };
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" 
       PaperProps={{ sx: { borderRadius: 3 } }}
@@ -67,14 +62,12 @@ const EditUserModal = ({ open, user, mode, onClose, onSave }) => {
           
           <TextField label="Email Address" name="email" value={form.email} onChange={handleChange} fullWidth />
 
-          {/* حقل الباسورد يظهر فقط عند إضافة مستخدم جديد */}
           {mode === "add" && (
             <TextField 
               label="Password" name="password" type="password" 
               value={form.password} onChange={handleChange} fullWidth 
             />
           )}
-
           <TextField label="Phone Number" name="phone" value={form.phone} onChange={handleChange} fullWidth />
 
           <Stack direction="row" spacing={2}>
@@ -101,5 +94,4 @@ const EditUserModal = ({ open, user, mode, onClose, onSave }) => {
     </Dialog>
   );
 };
-
 export default EditUserModal;

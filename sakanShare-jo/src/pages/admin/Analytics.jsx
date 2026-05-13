@@ -31,7 +31,6 @@ const Analytics = () => {
       <Typography variant="h5" fontWeight={800} mb={1}>Platform Analytics</Typography>
       <Typography variant="body2" color="text.secondary" mb={4}>Detailed insights and platform performance</Typography>
 
-      {/* 1. البطاقات العلوية (Summary Cards) */}
       <Grid container spacing={2}>
         {[
           { label: "Total Users", value: users?.length || 0, icon: <Users size={20}/>, color: "#6366f1" },
@@ -50,7 +49,6 @@ const Analytics = () => {
         ))}
       </Grid>
 
-      {/* 2. الرسوم البيانية مع إضافة مسافة علوية (mt: 6) لتبتعد عما فوقها */}
       <Grid container spacing={10} sx={{ mt: 4 }}> 
         {/* Requests Overview */}
         <Grid item xs={5} md={2}>
@@ -70,7 +68,6 @@ const Analytics = () => {
           </Paper>
         </Grid>
 
-        {/* User Roles Distribution */}
         <Grid item xs={12} md={2}>
           <Paper sx={{ p: 3, borderRadius: 4, border: "1px solid #f1f5f9", height: 420 }}>
             <Typography variant="subtitle1" fontWeight={800} mb={3}>User Roles Distribution</Typography>

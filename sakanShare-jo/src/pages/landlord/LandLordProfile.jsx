@@ -14,7 +14,7 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Rating, // تم إضافة Rating من MUI
+  Rating, 
 } from "@mui/material";
 import {
   Edit,
@@ -25,7 +25,7 @@ import {
   Phone,
   Email,
   HomeWork,
-  StarHalf, // تم إضافة أيقونة للتقييمات
+  StarHalf,
 } from "@mui/icons-material";
 import { UserContext } from "../../context/AuthContext.jsx";
 import api from "../../services/api.js";
@@ -37,7 +37,6 @@ export default function LandLordProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
 
-  // --- (نقطة 1: الإضافة الجديدة للـ States) ---
   const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({ total_reviews: 0, avg_rating: 0 });
 
@@ -54,7 +53,6 @@ export default function LandLordProfile() {
         email: user.email || "",
         phone: user.phone || "",
       });
-      // --- (نقطة 2: جلب بيانات التقييمات) ---
       fetchReviewData();
     }
   }, [user]);
@@ -138,7 +136,6 @@ export default function LandLordProfile() {
               <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
                 {user.role?.toUpperCase()} Account
               </Typography>
-              {/* --- (نقطة 3: إظهار النجوم في الهيدر) --- */}
               <Divider
                 orientation="vertical"
                 flexItem
@@ -230,7 +227,6 @@ export default function LandLordProfile() {
             </Stack>
           </Paper>
 
-          {/* --- (نقطة 4: قسم عرض المراجعات في أسفل المعلومات الشخصية) --- */}
           <Paper
             sx={{ p: 3, borderRadius: 4, border: "1px solid #E2E8F0", mt: 3 }}
             elevation={0}
@@ -246,7 +242,6 @@ export default function LandLordProfile() {
             </Typography>
             <Divider sx={{ mb: 2 }} />
 
-            {/* تم تصحيح الشرط هنا: المالك لا يقيم نفسه في صفحته الشخصية */}
             {false && (
               <AddReviewForm
                 reviewedUserId={user.userid}
@@ -277,7 +272,6 @@ export default function LandLordProfile() {
           </Paper>
         </Grid>
 
-        {/* Security / Password */}
         <Grid item xs={12} md={5}>
           <Paper
             sx={{ p: 3, borderRadius: 4, border: "1px solid #E2E8F0" }}

@@ -52,5 +52,4 @@ const UserDetails = ({ user, onClose }) => {
     </Dialog>
   );
 };
-
 export default UserDetails;

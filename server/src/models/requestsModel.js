@@ -111,3 +111,22 @@ export const markRequestAsViewed = async (request_id) => {
   const result = await pool.query(query, [request_id]);
   return result.rows[0];
 };
+
+// create role request
+export const createRoleRequest = async (user_id, message, phone, city) => {
+  const query = `
+    INSERT INTO role_requests 
+    (user_id, message, phone, city, status)
+    VALUES ($1, $2, $3, $4, 'pending')
+    RETURNING *
+  `;
+
+  const result = await pool.query(query, [
+    user_id,
+    message,
+    phone,
+    city,
+  ]);
+
+  return result.rows[0];
+};

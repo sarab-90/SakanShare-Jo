@@ -38,13 +38,12 @@ const AboutUs = () => {
   return (
     <Box sx={{ bgcolor: theme.palette.background.default, minHeight: "100vh", pb: 15, pt: { xs: 8, md: 12 }, }}>
       
-      {/* 1. Hero Section - التدرج المتوازن */}
       <Box 
         sx={{ 
           background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
           color: "white",
           pt: 10,
-          pb: 18, // مساحة كافية تحت النص
+          pb: 18,
           textAlign: "center",
         }}
       >
@@ -67,8 +66,6 @@ const AboutUs = () => {
           </Typography>
         </Container>
       </Box>
-
-      {/* 2. Features Grid - تداخل بسيط جداً لضمان ظهور الكروت كاملة */}
       <Container maxWidth="lg" sx={{ mt: -6 }}> 
         <Grid container spacing={3}>
           {features.map((feature, index) => (
@@ -101,7 +98,6 @@ const AboutUs = () => {
           ))}
         </Grid>
 
-        {/* 3. Vision Section - يتبع نفس خلفية الـ Hero */}
         <Box sx={{ mt: 15 }}> 
           <Paper 
             sx={{ 
@@ -115,7 +111,7 @@ const AboutUs = () => {
               <Grid 
                 item 
                 xs={12} 
-                md={7} // زيادة مساحة النص
+                md={7} 
                 sx={{ p: { xs: 5, md: 8 }, bgcolor: "white" }}
               >
                 <Typography variant="h3" sx={{ fontWeight: 800, mb: 3, color: theme.palette.primary.main }}>
@@ -138,7 +134,6 @@ const AboutUs = () => {
                 </Stack>
               </Grid>
 
-              {/* استبدال الصورة بخلفية متدرجة مطابقة للـ Hero */}
               <Grid 
                 item 
                 xs={12} 
@@ -151,7 +146,6 @@ const AboutUs = () => {
                   minHeight: { xs: 200, md: 'auto' }
                 }} 
               >
-                {/* إضافة شعار بسيط أو أيقونة كبيرة باللون الأبيض لإعطاء شكل جمالي */}
                 <Diversity1Rounded sx={{ fontSize: 100, color: "rgba(255,255,255,0.2)" }} />
               </Grid>
             </Grid>
@@ -161,5 +155,4 @@ const AboutUs = () => {
     </Box>
   );
 };
-
 export default AboutUs;

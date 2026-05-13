@@ -7,7 +7,6 @@ import {
 export const createUserPreferences = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
   const data = req.validateData;
-
   const existing = await getPreferencesByUserId(userid);
 
   if (existing) {
@@ -18,7 +17,6 @@ export const createUserPreferences = asyncHandler(async (req, res) => {
       data: updated,
     });
   }
-
   const newPref = await createPreferences(
     userid,
     data.gender,
@@ -36,7 +34,6 @@ export const createUserPreferences = asyncHandler(async (req, res) => {
     data.preferred_room_type,
     data.furnished
   );
-
   return res.status(201).json({
     success: true,
     data: newPref,
@@ -54,7 +51,6 @@ export const getUserPreferences = asyncHandler(async (req, res) => {
     data,
   });
 });
-
 export const updateUserPreferences = asyncHandler(async (req, res) => {
   const userid = req.user.userid;
   const data = req.validateData; 
@@ -79,7 +75,6 @@ export const updateUserPreferences = asyncHandler(async (req, res) => {
       data.preferred_room_type,
       data.furnished
     );
-
     return res.status(201).json({
       success: true,
       message: "Preferences created successfully",
@@ -92,12 +87,10 @@ export const updateUserPreferences = asyncHandler(async (req, res) => {
     data: updated,
   });
 });
-
 export const getPreferencesStats = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     data: {
-      total: Number(total),
       smoking,
       avgBudget,
       gender,

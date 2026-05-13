@@ -49,7 +49,6 @@ const UserPreferences = () => {
     try {
       setLoading(true);
 
-      // --- مرحلة تنظيف البيانات لحل أخطاء الـ 400 ---
       const { pref_id, userid, created_at, ...rawForm } = form;
 
       const cleanedData = {
@@ -98,7 +97,6 @@ const UserPreferences = () => {
       </Stack>
 
       <Grid container spacing={3}>
-        {/* المربع الأول: المتطلبات الأساسية (هنا أضفنا الحقول الجديدة) */}
         <Grid item xs={12} md={7}>
           <Paper sx={{ p: 3, borderRadius: 4, border: "1px solid #F1F5F9" }} elevation={0}>
             <Typography variant="subtitle1" fontWeight={800} mb={3} color="primary">Basic Requirements</Typography>
@@ -114,7 +112,6 @@ const UserPreferences = () => {
                 <TextField fullWidth label="Target City" name="city" value={form.city || ""} onChange={handleChange} disabled={!editMode} />
               </Grid>
               
-              {/* الحقول الجديدة بدقة */}
               <Grid item xs={6} md={3}>
                 <TextField fullWidth label="Min Age" name="min_age" type="number" value={form.min_age || ""} onChange={handleChange} disabled={!editMode} />
               </Grid>
@@ -135,7 +132,6 @@ const UserPreferences = () => {
           </Paper>
         </Grid>
 
-        {/* المربع الثاني: نمط الحياة والسكن */}
         <Grid item xs={12} md={5}>
           <Paper sx={{ p: 3, borderRadius: 4, border: "1px solid #F1F5F9" }} elevation={0}>
             <Typography variant="subtitle1" fontWeight={800} mb={3} color="primary">Lifestyle & Housing</Typography>
@@ -158,7 +154,6 @@ const UserPreferences = () => {
           </Paper>
         </Grid>
 
-        {/* المربع الثالث: الملاحظات */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3, borderRadius: 4, border: "1px solid #F1F5F9" }} elevation={0}>
              <Typography variant="subtitle1" fontWeight={800} mb={2}>Additional Notes</Typography>

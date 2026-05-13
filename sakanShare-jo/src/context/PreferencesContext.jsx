@@ -19,7 +19,7 @@ export const PreferencesProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      const res = await api.get("/admin/preferences/stats"); // ✅ الصحيح
+      const res = await api.get("/admin/preferences/stats");
 
       setStats(res.data.data);
     } catch (err) {

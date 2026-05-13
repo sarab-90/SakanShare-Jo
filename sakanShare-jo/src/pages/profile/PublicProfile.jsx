@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // لجلب رقم المالك من الرابط
+import { useParams } from "react-router-dom"; 
 import { 
   Container, Grid, Paper, Typography, Avatar, Stack, 
   Rating, Divider, CircularProgress, Box, Button 
@@ -9,7 +9,7 @@ import api from "../../services/api";
 import AddReviewForm from "../../components/forms/AddReviewForm.jsx";
 
 export default function PublicProfile() {
-  const { id } = useParams(); // هذا هو ID المالك من الرابط
+  const { id } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({ total_reviews: 0, avg_rating: 0 });
@@ -22,9 +22,9 @@ export default function PublicProfile() {
   const fetchPublicData = async () => {
     try {
       setLoading(true);
-      // نجلب بيانات المالك العامة، مراجعاته، وإحصائياته
+    
       const [userRes, reviewsRes, statsRes] = await Promise.all([
-        api.get(`/users/public/${id}`), // سنحتاج لإنشاء هذا الروت في الباك إند
+        api.get(`/users/public/${id}`), 
         api.get(`/user/${id}`),
         api.get(`/user/stats/${id}`)
       ]);
@@ -44,7 +44,6 @@ export default function PublicProfile() {
 
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
-      {/* 1. Header: معلومات المالك العامة */}
       <Paper elevation={0} sx={{ p: 4, borderRadius: 4, bgcolor: "#6366F1", color: "white", mb: 4 }}>
         <Grid container alignItems="center" spacing={3}>
           <Grid item>
@@ -73,10 +72,8 @@ export default function PublicProfile() {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
-          {/* 2. نموذج إضافة تقييم - يظهر للزوار دائماً */}
           <AddReviewForm reviewedUserId={id} onReviewAdded={fetchPublicData} />
 
-          {/* 3. قائمة التقييمات */}
           <Paper sx={{ p: 3, borderRadius: 4, border: "1px solid #E2E8F0" }} elevation={0}>
             <Typography variant="h6" fontWeight={700} mb={2} display="flex" alignItems="center">
               <StarHalf sx={{ mr: 1, color: "#6366F1" }} /> What students say
@@ -95,7 +92,6 @@ export default function PublicProfile() {
         </Grid>
 
         <Grid item xs={12} md={4}>
-           {/* هنا يمكن إضافة "العقارات التي يملكها هذا الشخص" لاحقاً */}
            <Paper sx={{ p: 3, borderRadius: 4, bgcolor: "#F8FAFC" }} elevation={0}>
               <Typography variant="subtitle1" fontWeight={700}>Verification</Typography>
               <Typography variant="body2" color="text.secondary">Identity Verified ✅</Typography>

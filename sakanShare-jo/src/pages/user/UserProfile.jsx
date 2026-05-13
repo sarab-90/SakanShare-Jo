@@ -36,21 +36,18 @@ export default function UserProfile() {
   
   const [isEditing, setIsEditing] = useState(false);
   
-  // بيانات الملف الشخصي
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
   });
 
-  // بيانات كلمة المرور
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
 
-  // تعبئة البيانات عند تحميل الصفحة
   useEffect(() => {
     if (user) {
       setFormData({
@@ -61,7 +58,6 @@ export default function UserProfile() {
     }
   }, [user]);
 
-  // تحديث البيانات الأساسية
   const handleProfileUpdate = async () => {
     try {
       await updateUserProfile(formData);
@@ -71,7 +67,6 @@ export default function UserProfile() {
     }
   };
 
-  // تغيير كلمة المرور
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmNewPassword) {
@@ -94,7 +89,6 @@ export default function UserProfile() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Grid container spacing={4}>
         
-        {/* الجزء الأيسر: بطاقة التعريف السريعة */}
         <Grid item xs={12} md={4}>
           <Stack spacing={3}>
             <Paper elevation={0} sx={{ p: 4, textAlign: 'center', borderRadius: 5, border: "1px solid #E2E8F0" }}>
@@ -128,7 +122,6 @@ export default function UserProfile() {
               </Box>
             </Paper>
 
-            {/* إحصائيات سريعة للمالك */}
             {user.role === 'landlord' && (
               <Card elevation={0} sx={{ borderRadius: 5, bgcolor: '#1B262C', color: 'white' }}>
                 <CardContent sx={{ p: 3 }}>
@@ -147,11 +140,9 @@ export default function UserProfile() {
           </Stack>
         </Grid>
 
-        {/* الجزء الأيمن: النماذج */}
         <Grid item xs={12} md={8}>
           <Stack spacing={4}>
             
-            {/* بطاقة المعلومات الشخصية */}
             <Paper elevation={0} sx={{ p: 4, borderRadius: 5, border: "1px solid #E2E8F0" }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h6" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -226,7 +217,6 @@ export default function UserProfile() {
               </Grid>
             </Paper>
 
-            {/* بطاقة تغيير كلمة المرور */}
             <Paper elevation={0} sx={{ p: 4, borderRadius: 5, border: "1px solid #E2E8F0" }}>
               <Typography variant="h6" fontWeight={800} mb={4} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <Lock sx={{ color: '#F43F5E' }} /> Change Password

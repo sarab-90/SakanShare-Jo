@@ -9,11 +9,9 @@ import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
 import { reviewSchema } from "../validation/reviewsValidation.js";
 import { insertNotification } from "../models/notificationModel.js";
 
-// ADD REVIEW
 export const addReviewController = asyncHandler(async (req, res) => {
   const { reviewed_user_id, rating, comment } = req.body;
   const reviewer_id = req.user.userid;
-  // Prevent self-review
   if (reviewer_id === parseInt(reviewed_user_id)) {
     return res.status(400).json({
       success: false,
@@ -46,7 +44,6 @@ export const addReviewController = asyncHandler(async (req, res) => {
           "You have already reviewed this user. You can only leave one review.",
       });
     }
-
     return res.status(500).json({
       success: false,
       message: "Error submitting review",
@@ -54,8 +51,6 @@ export const addReviewController = asyncHandler(async (req, res) => {
     });
   }
 });
-
-// GET USER REVIEWS
 export const getUserReviewsController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
@@ -76,7 +71,6 @@ export const getUserReviewsController = asyncHandler(async (req, res) => {
     });
   }
 });
-// GET USER RATING STATS (Average & Total)
 export const getUserRatingStatsController = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -120,7 +114,7 @@ export const updateReviewReply = asyncHandler(async (req, res) => {
 });
 export const fetchTopLandlords = async (req, res) => {
   try {
-    const landlords = await getTopRatedLandlords(4); // جلب أفضل 4 مالكين
+    const landlords = await getTopRatedLandlords(4);
     res.json({ success: true, landlords });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

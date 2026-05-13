@@ -33,9 +33,6 @@ export const ListingProvider = ({ children }) => {
   const updateListing = async (id, data) => {
     try {
       console.log("Cleaning data for update...");
-
-      // 1. استخراج الحقول المرفوضة من قبل الباكند لضمان عدم إرسالها
-      // أضفنا owner_id و owner_phone و current_occupants و listing_id بناءً على خطأ الكونسول
       const { 
         listing_id, 
         owner_id, 
@@ -46,8 +43,6 @@ export const ListingProvider = ({ children }) => {
         updated_at,
         ...cleanData 
       } = data;
-
-      // 2. تحويل القيم الرقمية لضمان المطابقة مع الـ Validator
       const finalData = {
         ...cleanData,
         price: Number(cleanData.price),
@@ -61,10 +56,10 @@ export const ListingProvider = ({ children }) => {
       const res = await api.put(`/listings/${id}`, finalData);
       
       toast.success("Listing updated successfully!");
-      await getListings(); // تحديث الجدول
+      await getListings(); 
     } catch (error) {
       console.error("Update Error Info:", error.response?.data);
-      // إظهار أول خطأ يرجعه الباكند للمستخدم
+
       const errorMsg = error.response?.data?.errors?.[0] || "Update failed";
       toast.error(errorMsg);
     }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react"; 
 import {
   AppBar,
   Toolbar,
@@ -14,6 +14,8 @@ import {
   MenuItem,
   Divider,
   ListItemIcon,
+  Badge,
+  Tooltip
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -21,15 +23,34 @@ import {
   AccountCircle,
   Dashboard as DashboardIcon,
   KeyboardArrowDown,
+  Notifications,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/AuthContext.jsx";
+import api from "../../services/api.js"; 
 
 export default function Navbar() {
   const { user, logout } = useContext(UserContext);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      const fetchUnreadCount = async () => {
+        try {
+          const res = await api.get("/unread-count"); 
+          setUnreadCount(res.data.unreadCount);
+        } catch (err) {
+          console.error("Error fetching unread count:", err);
+        }
+      };
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -42,11 +63,12 @@ export default function Navbar() {
 
   const navLinks = [
     { title: "Home", path: "/" },
-    { title: "About us", path: "/about/us" }, // تم تعديل المسار ليتناسب مع المشروع
+    { title: "About us", path: "/about/us" }, 
+    { title: "Contact", path: "/contact" },
   ];
 
   const linkStyle = {
-    color: "#1E293B", // لون أعمق وأوضح (Slate 800)
+    color: "#1E293B", 
     fontWeight: 700,
     borderRadius: 2,
     textTransform: "none",
@@ -60,14 +82,14 @@ export default function Navbar() {
         position="sticky"
         elevation={0}
         sx={{
-          backdropFilter: "blur(16px)", // تعميق تأثير الشفافية
-          background: "rgba(255,255,255,0.9)", // خلفية بيضاء بوضوح أكثر
-          borderBottom: "1px solid #CBD5E1", // خط سفلي أعمق
+          backdropFilter: "blur(16px)", 
+          background: "rgba(255,255,255,0.9)",
+          borderBottom: "1px solid #CBD5E1", 
           color: "#1B262C",
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar sx={{ justifyContent: "space-between", height: 90 }}> {/* زيادة الارتفاع لـ 85 */}
+          <Toolbar sx={{ justifyContent: "space-between", height: 90 }}> 
             {/* Logo */}
             <Typography
               variant="h5"
@@ -84,8 +106,6 @@ export default function Navbar() {
             >
               Sakan<span style={{ color: "#6366F1" }}>Share</span>
             </Typography>
-
-              <Link to="/profile/11">Go to Profile 11</Link>
 
             {/* Desktop Navigation */}
             <Stack
@@ -157,20 +177,50 @@ export default function Navbar() {
                 </Stack>
               ) : (
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  {user.role === "admin" && (
-                    <Button
-                      component={Link}
-                      to="/admin"
-                      sx={{
-                        ...linkStyle,
-                        color: "#6366F1",
-                        display: { xs: "none", sm: "flex" },
-                      }}
-                      startIcon={<DashboardIcon sx={{ fontSize: 20 }} />}
-                    >
-                      Admin Panel
-                    </Button>
+                  
+                  {(user.role === "user" || user.role === "landlord") && (
+                    <Tooltip title="My Messages">
+                      <IconButton 
+                        component={Link} 
+                        to="/messages"
+                        sx={{ color: "#6366F1", mr: 1 }}
+                      >
+                        <Badge badgeContent={0} color="error">
+                          <Notifications />
+                        </Badge>
+                      </IconButton>
+                    </Tooltip>
                   )}
+
+                  {user.role === "admin" && (
+                    <>
+                      <Tooltip title="Messages">
+                        <IconButton 
+                          component={Link} 
+                          to="/admin/messages"
+                          sx={{ color: "#6366F1", mr: 1 }}
+                        >
+                          <Badge badgeContent={unreadCount} color="error">
+                            <Notifications />
+                          </Badge>
+                        </IconButton>
+                      </Tooltip>
+
+                      <Button
+                        component={Link}
+                        to="/admin"
+                        sx={{
+                          ...linkStyle,
+                          color: "#6366F1",
+                          display: { xs: "none", sm: "flex" },
+                        }}
+                        startIcon={<DashboardIcon sx={{ fontSize: 20 }} />}
+                      >
+                        Admin Panel
+                      </Button>
+                    </>
+                  )}
+                  
                   {user.role === "landlord" && (
                     <Button
                       component={Link}
@@ -236,7 +286,7 @@ export default function Navbar() {
                     </Typography>
                   </Button>
 
-                  {/* Profile Menu */}
+                  {/* Profile Menu Dropdown */}
                   <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
@@ -299,7 +349,6 @@ export default function Navbar() {
                 </Stack>
               )}
 
-              {/* Mobile Menu Icon */}
               <IconButton
                 onClick={() => setMobileOpen(true)}
                 sx={{ display: { xs: "flex", md: "none" }, color: "#1B262C" }}
@@ -336,42 +385,29 @@ export default function Navbar() {
             <Divider sx={{ my: 2 }} />
             {!user ? (
               <Stack spacing={1.5}>
-                <Button
-                  component={Link}
-                  to="/login"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    borderRadius: 2.5,
-                    textTransform: "none",
-                    fontWeight: 700,
-                    fontSize:50
-                  }}
-                >
+                <Button component={Link} to="/login" variant="outlined" fullWidth sx={{ borderRadius: 2.5, textTransform: "none", fontWeight: 700 }}>
                   Login
                 </Button>
-                <Button
-                  component={Link}
-                  to="/register"
-                  variant="contained"
-                  disableElevation
-                  fullWidth
-                  sx={{
-                    bgcolor: "#6366F1",
-                    borderRadius: 2.5,
-                    textTransform: "none",
-                    fontWeight: 700,
-                    fontSize:50
-                  }}
-                >
+                <Button component={Link} to="/register" variant="contained" disableElevation fullWidth sx={{ bgcolor: "#6366F1", borderRadius: 2.5, textTransform: "none", fontWeight: 700 }}>
                   Sign up
                 </Button>
               </Stack>
             ) : (
               <Stack spacing={1}>
+                {(user.role === "user" || user.role === "landlord") && (
+                  <Button
+                    component={Link}
+                    to="/messages"
+                    fullWidth
+                    sx={{ ...linkStyle, justifyContent: "flex-start" }}
+                    startIcon={<Notifications />}
+                  >
+                    My Messages
+                  </Button>
+                )}
                 <Button
                   component={Link}
-                  to="/profile"
+                  to={user.role === "admin" ? "/admin/profile" : user.role === "landlord" ? "/landlord/profile" : "/user/profile"}
                   fullWidth
                   sx={{ ...linkStyle, justifyContent: "flex-start" }}
                   startIcon={<AccountCircle />}

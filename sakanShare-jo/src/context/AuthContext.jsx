@@ -60,9 +60,13 @@ export function UserProvider({ children }) {
 
       const role = res.data.user.role;
 
-      if (role === "admin") navigate("/admin");
-      else if (role === "user") navigate("/user/home");
-      else if (role === "landlord") navigate("/landlord/dashboard");
+      setUser(res.data.user);
+
+      setTimeout(() => {
+        if (role === "admin") navigate("/admin");
+        else if (role === "user") navigate("/user/home");
+        else if (role === "landlord") navigate("/landlord/dashboard");
+      }, 100);
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
@@ -112,6 +116,15 @@ export function UserProvider({ children }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await api.get("/auth/me");
+      setUser(res.data.user || res.data.me);
+    } catch {
+      setUser(null);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -126,6 +139,7 @@ export function UserProvider({ children }) {
         deleteUser,
         updateUserProfile,
         changeUserPassword,
+        refreshUser,
       }}
     >
       {children}

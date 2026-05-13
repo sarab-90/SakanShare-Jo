@@ -13,7 +13,6 @@ import api from "../../services/api.js";
 import AddListingForm from "../../pages/landlord/AddListingForm.jsx";
 import toast from "react-hot-toast";
 
-// مكون صغير لتصميم المربعات العلوية (الإحصائيات)
 const StatCard = ({ title, value, icon, color }) => (
   <Card sx={{ borderRadius: 4, boxShadow: "0 4px 20px rgba(0,0,0,0.05)", border: "1px solid #F1F5F9" }}>
     <CardContent sx={{ display: 'flex', alignItems: 'center', p: 3 }}>
@@ -36,12 +35,10 @@ const LandlordDashboard = () => {
   const [selectedListing, setSelectedListing] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // دالة جلب البيانات
   const fetchMyData = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/listings");
-      // تصفية العقارات لتظهر فقط الخاصة بهذا المالك
       const myProperties = res.data.data.filter((item) => item.owner_id === user.userid);
       setListings(myProperties);
     } catch (err) {
@@ -53,11 +50,9 @@ const LandlordDashboard = () => {
 
   useEffect(() => { fetchMyData(); }, [fetchMyData]);
 
-  // --- العمليات الحسابية البسيطة للإحصائيات ---
   const totalProperties = listings.length;
   const totalRevenue = listings.reduce((sum, item) => sum + Number(item.price || 0), 0);
   const totalRooms = listings.reduce((sum, item) => sum + Number(item.rooms_count || 0), 0);
-  // ------------------------------------------
 
   const handleOpenMenu = (event, listing) => {
     setAnchorEl(event.currentTarget);
@@ -74,7 +69,7 @@ const LandlordDashboard = () => {
       try {
         await api.delete(`/listings/${selectedListing.listing_id}`);
         toast.success("Deleted successfully");
-        fetchMyData(); // تحديث القائمة
+        fetchMyData(); 
         handleCloseMenu();
       } catch (err) {
         toast.error("Error deleting listing");
@@ -85,7 +80,6 @@ const LandlordDashboard = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 5 }, bgcolor: "#F8FAFC", minHeight: "100vh" }}>
       
-      {/* العنوان وزر الإضافة */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 5 }}>
         <Box>
           <Typography variant="h4" fontWeight={900} color="#0F172A">My Properties Dashboard</Typography>
@@ -100,8 +94,6 @@ const LandlordDashboard = () => {
           Add New Listing
         </Button>
       </Stack>
-
-      {/* قسم الإحصائيات (الذي تكلمنا عنه) */}
       <Grid container spacing={3} sx={{ mb: 5 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard title="Total Listings" value={totalProperties} icon={<HomeWork />} color="#6366F1" />
@@ -117,7 +109,6 @@ const LandlordDashboard = () => {
         </Grid>
       </Grid>
 
-      {/* قائمة العقارات */}
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <Paper sx={{ p: 3, borderRadius: 5, border: "1px solid #E2E8F0" }} elevation={0}>
@@ -151,7 +142,6 @@ const LandlordDashboard = () => {
         </Grid>
       </Grid>
 
-      {/* القائمة المنبثقة خيارات (تعديل/حذف) */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
         <MenuItem onClick={() => { setOpenModal(true); handleCloseMenu(); }}>
           <ListItemIcon><Edit fontSize="small" /></ListItemIcon>
@@ -163,7 +153,6 @@ const LandlordDashboard = () => {
         </MenuItem>
       </Menu>
 
-      {/* نافذة الإضافة والتعديل */}
       <AddListingForm 
         open={openModal} 
         onClose={() => setOpenModal(false)} 

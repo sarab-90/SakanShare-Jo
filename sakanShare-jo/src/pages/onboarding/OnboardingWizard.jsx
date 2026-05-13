@@ -129,13 +129,13 @@ const handleFinish = async () => {
             <TextField
               select
               label="Roommate Preference"
-              name="gender" // ✅ تم التعديل
+              name="gender"
               value={formData.gender}
               onChange={handleChange}
             >
               <MenuItem value="male">Male</MenuItem>
               <MenuItem value="female">Female</MenuItem>
-              <MenuItem value="any">Any</MenuItem> {/* ✅ مهم */}
+              <MenuItem value="any">Any</MenuItem> 
             </TextField>
           </Box>
         );

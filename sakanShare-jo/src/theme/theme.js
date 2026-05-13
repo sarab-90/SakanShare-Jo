@@ -3,21 +3,21 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1B262C", // Dark Navy (Primary)
+      main: "#1B262C",
     },
 
     secondary: {
-      main: "#6366F1", // Indigo
+      main: "#6366F1", 
     },
 
     background: {
-      default: "#F8FAFC", // Slate 50
+      default: "#F8FAFC",
       paper: "#FFFFFF",
     },
 
     text: {
-      primary: "#1E293B", // Slate 900
-      secondary: "#64748B", // Slate 500
+      primary: "#1E293B", 
+      secondary: "#64748B", 
     },
 
     success: {
@@ -25,7 +25,7 @@ const theme = createTheme({
     },
 
     error: {
-      main: "#EF4444", // Soft Red
+      main: "#EF4444", 
     },
   },
 

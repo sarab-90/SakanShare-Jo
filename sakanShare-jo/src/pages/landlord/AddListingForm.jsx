@@ -74,7 +74,6 @@ export default function AddListingForm({ open, onClose, onSuccess, initialData }
     console.log("Clean data sent to backend:", dataToSubmit);
 
     if (initialData) {
-      // نرسل الـ ID في الرابط فقط، وليس داخل الجسم (Body)
       await api.put(`/listings/${initialData.listing_id}`, dataToSubmit);
       toast.success("Listing updated successfully!");
     } else {
@@ -85,7 +84,6 @@ export default function AddListingForm({ open, onClose, onSuccess, initialData }
     onSuccess();
     onClose();
   } catch (err) {
-    // استخراج الخطأ الأول من مصفوفة الأخطاء التي يرسلها الباك أند
     const errorMessage = err.response?.data?.errors?.[0] || err.response?.data?.message || "Server Error";
     console.error("Back-end Error Details:", err.response?.data);
     toast.error(errorMessage);
@@ -125,7 +123,6 @@ export default function AddListingForm({ open, onClose, onSuccess, initialData }
               <TextField fullWidth type="number" label="Max Occupants" name="max_occupants" value={formData.max_occupants} onChange={handleChange} />
             </Grid>
             
-            {/* حقول الإحداثيات الجديدة */}
             <Grid item xs={6}>
               <TextField 
                 fullWidth 

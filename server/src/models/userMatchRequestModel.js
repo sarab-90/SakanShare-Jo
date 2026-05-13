@@ -1,6 +1,5 @@
 import { pool } from "../config/db.js";
 
-// CREATE REQUEST
 export const createMatchRequest = async (
   sender_id,
   receiver_id,
@@ -16,8 +15,6 @@ export const createMatchRequest = async (
 
   return result.rows[0];
 };
-
-// GET SENT REQUESTS
 export const getSentMatchRequests = async (userid) => {
   const result = await pool.query(
     `SELECT umr.*, u.name AS receiver_name
@@ -30,8 +27,6 @@ export const getSentMatchRequests = async (userid) => {
 
   return result.rows;
 };
-
-// GET RECEIVED REQUESTS
 export const getReceivedMatchRequests = async (userid) => {
   const result = await pool.query(
     `SELECT umr.*, u.name AS sender_name
@@ -44,8 +39,6 @@ export const getReceivedMatchRequests = async (userid) => {
 
   return result.rows;
 };
-
-// UPDATE STATUS
 export const updateMatchRequestStatus = async (request_id, status) => {
   const result = await pool.query(
     `UPDATE user_match_requests
@@ -57,8 +50,6 @@ export const updateMatchRequestStatus = async (request_id, status) => {
 
   return result.rows[0];
 };
-
-// CHECK DUPLICATE REQUEST 
 export const checkExistingRequest = async (sender_id, receiver_id) => {
   const result = await pool.query(
     `SELECT * FROM user_match_requests

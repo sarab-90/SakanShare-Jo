@@ -9,10 +9,10 @@ const UserLayout = () => {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#F8FAFC" }}>
-      {/* GLOBAL NAVBAR */}
+    
       <Navbar user={user} />
 
-      {/* PAGE CONTENT */}
+     
       <Box sx={{ px: 2, py: 3 }}>
         <Outlet />
       </Box>

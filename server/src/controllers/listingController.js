@@ -105,16 +105,19 @@ export const getListingsController = asyncHandler(async (req, res) => {
 export const getListingByIdController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const listing = await getListingById(id);
+    const listing = await getListingById(id); 
+
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
     }
-    return res.status(200).json({ success: true, data: listing });
+    return res.status(200).json({ 
+      success: true, 
+      data: listing 
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-
 // Update listing by ID
 export const updateListingController = asyncHandler(async (req, res) => {
   const listingId = req.params.id;

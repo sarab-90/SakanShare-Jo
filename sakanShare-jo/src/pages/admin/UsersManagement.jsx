@@ -17,7 +17,7 @@ const UsersManagement = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
-  const [mode, setMode] = useState("edit"); // أضفنا حالة لتحديد هل نحن في وضع إضافة أم تعديل
+  const [mode, setMode] = useState("edit"); 
 
   useEffect(() => {
     allUsers();
@@ -28,14 +28,12 @@ const UsersManagement = () => {
     u?.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // فتح المودال للإضافة
   const handleOpenAdd = () => {
     setMode("add");
-    setSelectedUser(null); // نرسل مستخدم فارغ للإضافة
+    setSelectedUser(null);
     setEditOpen(true);
   };
 
-  // فتح المودال للتعديل
   const handleOpenEdit = (user) => {
     setMode("edit");
     setSelectedUser(user);
@@ -47,27 +45,23 @@ const UsersManagement = () => {
   
   try {
     if (mode === "add") {
-      // 1. استدعاء راوت الـ register لأن راوت الـ users لا يدعم POST
-      // تأكدي من المسار الصحيح لديكِ (غالباً /auth/register)
       await api.post("/auth/register", { 
         name, 
         email, 
         phone, 
-        password: password || "DefaultPassword123", // استخدام الباسورد المدخل أو الافتراضي
+        password: password || "DefaultPassword123", 
         role 
       });
       toast.success("User registered successfully!", { id: loadingToast });
     } else {
-      // 2. تحديث المستخدم الحالي (راوت الـ users يدعم PUT)
       await api.put(`/users/${id}`, { name, email, phone, role, is_active });
       toast.success("User updated successfully!", { id: loadingToast });
     }
     
     setEditOpen(false);
-    await allUsers(); // تحديث الجدول
+    await allUsers(); 
   } catch (err) {
     console.error("Save Error:", err);
-    // إظهار رسالة الخطأ القادمة من السيرفر (مثل: الإيميل موجود مسبقاً)
     const errorMsg = err.response?.data?.message || "Operation failed";
     toast.error(errorMsg, { id: loadingToast });
   }
@@ -80,7 +74,6 @@ const UsersManagement = () => {
           <Typography variant="h5" fontWeight={800} color="primary.main">Users Management</Typography>
           <Typography variant="body2" color="text.secondary">Manage platform members</Typography>
         </Box>
-        {/* زر الإضافة يستخدم نفس المودال */}
         <Button 
           variant="contained" 
           startIcon={<UserPlus size={18}/>} 
@@ -143,12 +136,11 @@ const UsersManagement = () => {
         </TableContainer>
       </Paper>
 
-      {/* استخدمنا نفس المودال الموجود عندك أصلاً */}
       {editOpen && (
         <EditUserModal
           open={editOpen}
           user={selectedUser}
-          mode={mode} // نمرر الوضع للمودال ليعرف هل يظهر "إضافة" أم "تعديل"
+          mode={mode}
           onClose={() => setEditOpen(false)}
           onSave={handleSave}
         />
@@ -156,5 +148,4 @@ const UsersManagement = () => {
     </Box>
   );
 };
-
 export default UsersManagement;

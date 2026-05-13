@@ -3,8 +3,7 @@ import {
   markNotificationAsRead,
 } from "../models/notificationModel.js";
 import { asyncHandler } from "../middleware/asyncHandlerMiddleware.js";
-
-// جلب إشعارات المستخدم الحالي
+//  إشعارات المستخدم 
 export const getMyNotificationsController = asyncHandler(async (req, res) => {
   const userId = req.user.userid;
   try {
@@ -21,8 +20,7 @@ export const getMyNotificationsController = asyncHandler(async (req, res) => {
     });
   }
 });
-
-// تحديث إشعار واحد كـ "مقروء"
+// تحديث إشعار واحد 
 export const markReadController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.userid;

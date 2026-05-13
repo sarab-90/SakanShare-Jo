@@ -25,13 +25,10 @@ const ListingModal = ({ open, mode, listing, onClose, onSave }) => {
     currency: "JOD",
     images: []
   });
-
-  // تحديث البيانات عند فتح المودال (للتعديل أو العرض)
   useEffect(() => {
     if (listing && (mode === "edit" || mode === "view")) {
       setFormData({
         ...listing,
-        // التأكد من أن القيم الرقمية تظهر بشكل صحيح في الـ Inputs
         price: listing.price || "",
         area: listing.area || "",
         rooms_count: listing.rooms_count || 1,
@@ -39,7 +36,6 @@ const ListingModal = ({ open, mode, listing, onClose, onSave }) => {
         max_occupants: listing.max_occupants || 1
       });
     } else {
-      // إعادة التعيين عند الإضافة الجديدة
       setFormData({
         title: "", description: "", city: "", area: "", price: "",
         rooms_count: 1, bathrooms_count: 1, max_occupants: 1,
@@ -53,20 +49,17 @@ const ListingModal = ({ open, mode, listing, onClose, onSave }) => {
   const isView = mode === "view";
 
   const handleSubmit = () => {
-    // تجهيز البيانات وتحويلها للأنواع المطلوبة في الباكند (Joi Validation)
     const finalData = {
       ...formData,
       price: Number(formData.price),
       rooms_count: Number(formData.rooms_count),
       bathrooms_count: Number(formData.bathrooms_count),
       max_occupants: Number(formData.max_occupants),
-      area: String(formData.area), // الباكند يطلبه String في الـ Schema
+      area: String(formData.area), 
       description: formData.description || "No description provided",
       images: formData.images || [],
       currency: formData.currency || "JOD"
     };
-
-    console.log("Submitting to Save:", finalData);
     onSave(finalData);
   };
 
@@ -160,5 +153,4 @@ const ListingModal = ({ open, mode, listing, onClose, onSave }) => {
     </Dialog>
   );
 };
-
 export default ListingModal;

@@ -17,7 +17,6 @@ router.post("/add", protect, authorizeRoles("user", "landlord"), validate(review
 
 router.get("/user/:id", protect, authorizeRoles("admin", "user", "landlord"), getUserReviewsController);
 
-// Get average rating and total reviews count for a user
 router.get("/user/stats/:id", protect, authorizeRoles("admin", "user", "landlord"), getUserRatingStatsController);
 
 router.get("/top/landlords", fetchTopLandlords);

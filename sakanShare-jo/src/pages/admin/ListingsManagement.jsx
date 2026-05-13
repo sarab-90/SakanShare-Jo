@@ -16,15 +16,12 @@ const ListingsManagement = () => {
 const handleSave = async (formData) => {
   console.log("Fixing Not-Null constraint by merging data...");
 
-  // 1. استخراج الحقول التي لا نريد تعديلها (الزوائد)
   const { 
     listing_id, owner_id, owner_name, owner_phone, 
     created_at, updated_at, current_occupants, 
     ...updatedFields 
   } = formData;
 
-  // 2. دمج البيانات: نأخذ القيمة من الـ Listing المختار أصلاً (selectedListing)
-  // ونستبدلها فقط إذا كان هناك قيمة جديدة في formData
   const finalData = {
     title: updatedFields.title || selectedListing.title,
     description: updatedFields.description || selectedListing.description,
@@ -33,7 +30,6 @@ const handleSave = async (formData) => {
     price: Number(updatedFields.price ?? selectedListing.price),
     rooms_count: Number(updatedFields.rooms_count ?? selectedListing.rooms_count),
     bathrooms_count: Number(updatedFields.bathrooms_count ?? selectedListing.bathrooms_count),
-    // هنا الأهم: إذا لم تعدلي max_occupants، نرسل القيمة القديمة الموجودة في selectedListing
     max_occupants: Number(updatedFields.max_occupants ?? selectedListing.max_occupants),
     gender_allowed: updatedFields.gender_allowed || selectedListing.gender_allowed,
     is_shared: updatedFields.is_shared ?? selectedListing.is_shared,
